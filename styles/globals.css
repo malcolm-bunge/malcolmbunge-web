@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', sans-serif;
+  --font-poppins: 'Poppins', sans-serif;
+
+  --color-brand: #fccb00;
+  --color-blue: #1da9ef;
+  --color-bg: #1b1b34;
+  --color-text: #e1d9cc;
+  --color-ink: #4d412d;
+  --color-atmosphere: #A855F7;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #1b1b34;
+  color: #e1d9cc;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
