@@ -255,14 +255,13 @@ export default function Home() {
           <div
             style={{
               fontFamily: F.poppins,
-              fontWeight: 800,
-              fontSize: '13px',
+              fontWeight: 600,
+              fontSize: '14px',
               lineHeight: '20px',
-              letterSpacing: '2px',
+              letterSpacing: '0.98px',
               textTransform: 'uppercase',
-              color: C.textPrimary,
-              opacity: 0.5,
-              marginTop: '6px',
+              color: C.yellow,
+              marginTop: '2px',
             }}
           >
             {META.tagline}
@@ -309,18 +308,18 @@ export default function Home() {
             >
               <h2
                 style={{
-                  fontFamily: F.poppins,
-                  fontWeight: 800,
+                  fontFamily: F.fraunces,
+                  fontWeight: 700,
                   fontSize: '24px',
                   lineHeight: '32px',
                   letterSpacing: '0.24px',
-                  textTransform: 'uppercase',
+                  textTransform: 'lowercase',
                   color: C.yellow,
                   margin: 0,
                   flexShrink: 0,
                 }}
               >
-                The Live Feed
+                the live feed
               </h2>
 
               {sprintStatus ? (
@@ -447,18 +446,18 @@ export default function Home() {
             >
               <h2
                 style={{
-                  fontFamily: F.poppins,
-                  fontWeight: 800,
+                  fontFamily: F.fraunces,
+                  fontWeight: 700,
                   fontSize: '24px',
                   lineHeight: '32px',
                   letterSpacing: '0.24px',
-                  textTransform: 'uppercase',
+                  textTransform: 'lowercase',
                   color: C.yellow,
                   margin: 0,
                   flexShrink: 0,
                 }}
               >
-                The Raw Log
+                the raw log
               </h2>
 
               {/* Scrollable log entries */}
@@ -525,17 +524,17 @@ export default function Home() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '8px',
-                  fontFamily: F.poppins,
-                  fontWeight: 800,
+                  fontFamily: F.fraunces,
+                  fontWeight: 700,
                   fontSize: '19px',
                   lineHeight: '16px',
                   letterSpacing: '0.19px',
-                  textTransform: 'uppercase',
+                  textTransform: 'lowercase',
                   width: 'fit-content',
                   flexShrink: 0,
                 }}
               >
-                View All Sprints
+                View all sprints
                 <svg
                   width="24"
                   height="24"
