@@ -59,6 +59,16 @@ interface LogEntry {
   content: string
 }
 
+// Format date to UK English (e.g., "19 March 2026")
+const formatDateUK = (dateString: string): string => {
+  const date = new Date(dateString)
+  return new Intl.DateTimeFormat('en-GB', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date)
+}
+
 export default function Home() {
   const [sprintStatus, setSprintStatus] = useState<SprintStatus | null>(null)
   const [logEntries, setLogEntries] = useState<LogEntry[]>([])
@@ -344,7 +354,7 @@ export default function Home() {
                       }}
                     >
                       <span>{sprintStatus.sprintNumber}</span>
-                      <span>{sprintStatus.deadline}</span>
+                      <span>{formatDateUK(sprintStatus.deadline)}</span>
                     </div>
                   </div>
 
