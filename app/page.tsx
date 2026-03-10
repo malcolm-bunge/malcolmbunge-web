@@ -22,7 +22,7 @@ const C = {
 const F = {
   fraunces: "'Fraunces', serif",
   poppins: "'Poppins', sans-serif",
-  inter: "'Inter', sans-serif",
+  jakarta: "'Plus Jakarta Sans', sans-serif",
 }
 
 const S = {
@@ -95,7 +95,7 @@ export default function Home() {
         backgroundColor: C.background,
         height: '100dvh',
         width: '100%',
-        fontFamily: F.inter,
+        fontFamily: F.jakarta,
         color: C.textPrimary,
         position: 'relative',
         overflow: 'hidden',
@@ -187,7 +187,7 @@ export default function Home() {
           <span
             className="nav-intro"
             style={{
-              fontFamily: F.inter,
+              fontFamily: F.jakarta,
               fontWeight: 400,
               fontSize: '14px',
               lineHeight: '20px',
@@ -205,7 +205,7 @@ export default function Home() {
                 border: 'none',
                 padding: '4px 8px',
                 cursor: 'pointer',
-                fontFamily: F.inter,
+                fontFamily: F.jakarta,
                 fontWeight: 400,
                 fontSize: '16px',
                 lineHeight: '24px',
@@ -220,7 +220,7 @@ export default function Home() {
                 border: 'none',
                 padding: '4px 8px',
                 cursor: 'pointer',
-                fontFamily: F.inter,
+                fontFamily: F.jakarta,
                 fontWeight: 400,
                 fontSize: '16px',
                 lineHeight: '24px',
@@ -341,7 +341,7 @@ export default function Home() {
                         display: 'flex',
                         justifyContent: 'space-between',
                         gap: S.sm,
-                        fontFamily: F.inter,
+                        fontFamily: F.jakarta,
                         fontWeight: 400,
                         fontSize: '14px',
                         lineHeight: '20px',
@@ -356,12 +356,12 @@ export default function Home() {
                         display: 'flex',
                         justifyContent: 'space-between',
                         gap: S.sm,
-                        fontFamily: F.poppins,
-                        fontWeight: 800,
+                        fontFamily: F.jakarta,
+                        fontWeight: 700,
                         fontSize: '19px',
                         lineHeight: '16px',
                         letterSpacing: '0.19px',
-                        textTransform: 'uppercase',
+                        textTransform: 'lowercase',
                         color: C.textPrimary,
                       }}
                     >
@@ -374,7 +374,7 @@ export default function Home() {
                   <div style={{display: 'flex', flexDirection: 'column'}}>
                     <span
                       style={{
-                        fontFamily: F.inter,
+                        fontFamily: F.jakarta,
                         fontWeight: 400,
                         fontSize: '14px',
                         lineHeight: '20px',
@@ -385,7 +385,7 @@ export default function Home() {
                     </span>
                     <p
                       style={{
-                        fontFamily: F.inter,
+                        fontFamily: F.jakarta,
                         fontStyle: 'italic',
                         fontWeight: 400,
                         fontSize: '16px',
@@ -402,7 +402,7 @@ export default function Home() {
                   <div style={{display: 'flex', flexDirection: 'column'}}>
                     <span
                       style={{
-                        fontFamily: F.inter,
+                        fontFamily: F.jakarta,
                         fontWeight: 400,
                         fontSize: '14px',
                         lineHeight: '20px',
@@ -413,7 +413,7 @@ export default function Home() {
                     </span>
                     <p
                       style={{
-                        fontFamily: F.inter,
+                        fontFamily: F.jakarta,
                         fontStyle: 'italic',
                         fontWeight: 400,
                         fontSize: '16px',
@@ -482,7 +482,7 @@ export default function Home() {
                     >
                       <span
                         style={{
-                          fontFamily: F.inter,
+                          fontFamily: F.jakarta,
                           fontWeight: 400,
                           fontSize: '14px',
                           lineHeight: '28px',
@@ -493,7 +493,7 @@ export default function Home() {
                       </span>
                       <p
                         style={{
-                          fontFamily: F.inter,
+                          fontFamily: F.jakarta,
                           fontWeight: 400,
                           fontSize: '16px',
                           lineHeight: '28px',
@@ -524,7 +524,7 @@ export default function Home() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '8px',
-                  fontFamily: F.fraunces,
+                  fontFamily: F.jakarta,
                   fontWeight: 700,
                   fontSize: '19px',
                   lineHeight: '16px',
@@ -567,7 +567,7 @@ export default function Home() {
           <span style={{color: C.yellow, fontSize: '16px', lineHeight: 1}}>✦</span>
           <span
             style={{
-              fontFamily: F.inter,
+              fontFamily: F.jakarta,
               fontWeight: 400,
               fontSize: '14px',
               lineHeight: '20px',
@@ -648,7 +648,7 @@ export default function Home() {
             </h2>
             <p
               style={{
-                fontFamily: F.inter,
+                fontFamily: F.jakarta,
                 fontWeight: 400,
                 fontSize: '16px',
                 lineHeight: '28px',
@@ -660,7 +660,7 @@ export default function Home() {
             </p>
             <p
               style={{
-                fontFamily: F.inter,
+                fontFamily: F.jakarta,
                 fontWeight: 400,
                 fontSize: '14px',
                 lineHeight: '20px',
