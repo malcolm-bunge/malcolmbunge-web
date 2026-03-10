@@ -16,9 +16,11 @@ const C = {
   blueFaded: 'rgba(29, 169, 239, 0.2)',
   textPrimary: '#e1d9cc',
   textDark: '#4d412d',
+  divider: 'rgba(225, 217, 204, 0.12)',
 }
 
 const F = {
+  fraunces: "'Fraunces', serif",
   poppins: "'Poppins', sans-serif",
   inter: "'Inter', sans-serif",
 }
@@ -32,16 +34,10 @@ const S = {
   xxl: '64px',
 }
 
-// Meta data (static, can be moved to Sanity later)
 const META = {
-  name: 'Malcolm Bunge',
-  tagline: [
-    'Humane Systems Architecture',
-    'Operational Design',
-    'Functional Build',
-  ],
-  systemStatus: 'System_Active // 0326_V1.MB',
-  bio: 'I started building digital products and designing experiences before the dotcom bubble burst the first time. My focus ever since has been aligning human needs with business goals while keeping a constant eye on technical feasibility. In the age of AI, I believe it is more important than ever that we understand which problem we are actually solving without falling victim to the hype. I design the blueprints and then build the machinery myself to ensure the strategy survives the contact with reality. Strategy is a hypothesis: building is the proof.',
+  name: 'malcolm bunge',
+  tagline: 'Design & Build',
+  intro: 'Currently building this portfolio with Claude. Everything you see is real-time work.',
 }
 
 interface SprintStatus {
@@ -60,7 +56,7 @@ interface LogEntry {
 
 // Format date to UK English (e.g., "19 March 2026")
 const formatDateUK = (dateString: string): string => {
-  const date = new Date(dateString)
+  const date = new Date(dateString + 'T00:00:00')
   return new Intl.DateTimeFormat('en-GB', {
     year: 'numeric',
     month: 'long',
@@ -94,9 +90,10 @@ export default function Home() {
 
   return (
     <div
+      className="page-root"
       style={{
         backgroundColor: C.background,
-        minHeight: '100vh',
+        height: '100dvh',
         width: '100%',
         fontFamily: F.inter,
         color: C.textPrimary,
@@ -106,52 +103,41 @@ export default function Home() {
     >
       <style>{`
         @media (max-width: 1023px) {
-          /* Mobile: Adjust header */
-          .malcolm-header h1 {
+          .page-root {
+            height: auto !important;
+            min-height: 100dvh !important;
+            overflow: auto !important;
+          }
+          .main-wrapper {
+            height: auto !important;
+          }
+          .two-col-wrapper {
+            flex-direction: column !important;
+            flex: none !important;
+          }
+          .raw-log-scroll {
+            overflow-y: visible !important;
+            max-height: none !important;
+            flex: none !important;
+          }
+          .live-feed-section,
+          .raw-log-section {
+            border-right: none !important;
+            padding: ${S.md} !important;
+          }
+          .blog-teaser {
+            margin-top: ${S.md} !important;
+          }
+          .nav-intro {
+            display: none !important;
+          }
+          h1.main-name {
             font-size: 48px !important;
             line-height: 48px !important;
           }
-
-          .malcolm-header .tagline {
-            font-size: 14px !important;
-            line-height: 14px !important;
-          }
-
-          .malcolm-header p {
-            font-size: 16px !important;
-            line-height: 24px !important;
-          }
-
-          /* Mobile: Single column layout */
-          .two-col-wrapper {
-            flex-direction: column !important;
-          }
-
-          /* Mobile: Make sections full width */
-          .live-feed-section,
-          .raw-log-section {
-            width: 100% !important;
-            min-height: auto !important;
-          }
-
-          /* Mobile: Adjust font sizes in Live Feed */
-          .live-feed-section h3,
-          .raw-log-section h3 {
-            font-size: 24px !important;
-            margin-bottom: 16px !important;
-          }
-
-          /* Mobile: Better spacing */
-          .live-feed-box {
-            padding: 16px !important;
-            border-width: 1px !important;
-          }
-
-          .log-entry {
-            margin-bottom: 20px !important;
-          }
         }
       `}</style>
+
       {/* Background blur glow */}
       <div
         style={{
@@ -168,17 +154,20 @@ export default function Home() {
         }}
       />
 
-      {/* Main content */}
+      {/* Main wrapper */}
       <div
+        className="main-wrapper"
         style={{
           position: 'relative',
           zIndex: 1,
           maxWidth: '1512px',
           margin: '0 auto',
-          paddingTop: S.xxl,
+          width: '100%',
+          height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          gap: S.lg,
+          padding: `${S.lg} ${S.lg} 0`,
+          boxSizing: 'border-box',
         }}
       >
         {/* ── NAV BAR ── */}
@@ -187,22 +176,24 @@ export default function Home() {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            paddingLeft: S.lg,
-            paddingRight: S.lg,
+            flexShrink: 0,
+            paddingBottom: S.md,
           }}
         >
           <span
+            className="nav-intro"
             style={{
               fontFamily: F.inter,
               fontWeight: 400,
-              fontSize: '16px',
-              lineHeight: '28px',
+              fontSize: '14px',
+              lineHeight: '20px',
               color: C.textPrimary,
+              opacity: 0.7,
             }}
           >
-            {META.systemStatus}
+            {META.intro}
           </span>
-          <div style={{display: 'flex', gap: '10px'}}>
+          <div style={{display: 'flex', gap: '10px', marginLeft: 'auto'}}>
             <button
               style={{
                 backgroundColor: C.yellow,
@@ -238,82 +229,51 @@ export default function Home() {
 
         {/* ── HEADER ── */}
         <div
-          className="malcolm-header"
           style={{
-            paddingLeft: S.lg,
-            paddingRight: S.lg,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: S.lg,
+            flexShrink: 0,
+            paddingBottom: S.lg,
           }}
         >
-          {/* Name + Tagline */}
+          <h1
+            className="main-name"
+            style={{
+              fontFamily: F.fraunces,
+              fontWeight: 900,
+              fontSize: '64px',
+              lineHeight: '64px',
+              color: C.yellow,
+              margin: 0,
+              textTransform: 'lowercase',
+            }}
+          >
+            {META.name}
+          </h1>
           <div
             style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: '3px',
-              flexWrap: 'nowrap',
-            }}
-          >
-            <h1
-              style={{
-                fontFamily: F.poppins,
-                fontWeight: 900,
-                fontSize: '64px',
-                lineHeight: '64px',
-                letterSpacing: '0.64px',
-                textTransform: 'uppercase',
-                color: C.yellow,
-                margin: 0,
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {META.name}
-            </h1>
-            <div
-              style={{
-                fontFamily: F.poppins,
-                fontWeight: 800,
-                fontSize: '19px',
-                lineHeight: '16px',
-                letterSpacing: '0.19px',
-                textTransform: 'uppercase',
-                color: C.yellow,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '4px',
-                paddingTop: '10px',
-              }}
-            >
-              {META.tagline.map((line, i) => (
-                <div key={i}>{line}</div>
-              ))}
-            </div>
-          </div>
-
-          {/* Bio */}
-          <p
-            style={{
-              fontFamily: F.inter,
-              fontWeight: 600,
-              fontSize: '18px',
-              lineHeight: '28px',
+              fontFamily: F.poppins,
+              fontWeight: 800,
+              fontSize: '13px',
+              lineHeight: '20px',
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
               color: C.textPrimary,
-              margin: 0,
+              opacity: 0.5,
+              marginTop: '6px',
             }}
           >
-            {META.bio}
-          </p>
+            {META.tagline}
+          </div>
         </div>
 
         {/* ── TWO COLUMNS ── */}
         {loading ? (
           <div
             style={{
-              padding: S.lg,
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               color: C.yellow,
-              textAlign: 'center',
             }}
           >
             Loading...
@@ -322,10 +282,11 @@ export default function Home() {
           <div
             className="two-col-wrapper"
             style={{
+              flex: '1 1 0',
+              minHeight: 0,
               display: 'flex',
-              flexDirection: 'row',
               gap: '1px',
-              alignItems: 'stretch',
+              borderTop: `1px solid ${C.divider}`,
             }}
           >
             {/* LEFT: The Live Feed */}
@@ -338,6 +299,8 @@ export default function Home() {
                 display: 'flex',
                 flexDirection: 'column',
                 gap: S.sm,
+                borderRight: `1px solid ${C.divider}`,
+                overflow: 'hidden',
               }}
             >
               <h2
@@ -350,6 +313,7 @@ export default function Home() {
                   textTransform: 'uppercase',
                   color: C.yellow,
                   margin: 0,
+                  flexShrink: 0,
                 }}
               >
                 The Live Feed
@@ -367,14 +331,8 @@ export default function Home() {
                     gap: S.sm,
                   }}
                 >
-                  {/* Current Focus + Deadline labels */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '8px',
-                    }}
-                  >
+                  {/* Current Focus + Deadline */}
+                  <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
                     <div
                       style={{
                         display: 'flex',
@@ -410,12 +368,7 @@ export default function Home() {
                   </div>
 
                   {/* Technical Status */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                    }}
-                  >
+                  <div style={{display: 'flex', flexDirection: 'column'}}>
                     <span
                       style={{
                         fontFamily: F.inter,
@@ -443,12 +396,7 @@ export default function Home() {
                   </div>
 
                   {/* Strategic Objective */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                    }}
-                  >
+                  <div style={{display: 'flex', flexDirection: 'column'}}>
                     <span
                       style={{
                         fontFamily: F.inter,
@@ -490,6 +438,7 @@ export default function Home() {
                 display: 'flex',
                 flexDirection: 'column',
                 gap: S.sm,
+                overflow: 'hidden',
               }}
             >
               <h2
@@ -502,16 +451,19 @@ export default function Home() {
                   textTransform: 'uppercase',
                   color: C.yellow,
                   margin: 0,
+                  flexShrink: 0,
                 }}
               >
                 The Raw Log
               </h2>
 
-              {/* Log entries */}
+              {/* Scrollable log entries */}
               <div
+                className="raw-log-scroll"
                 style={{
-                  display: 'flex',
-                  flexDirection: 'column',
+                  flex: '1 1 0',
+                  minHeight: 0,
+                  overflowY: 'auto',
                 }}
               >
                 {logEntries.length > 0 ? (
@@ -555,7 +507,7 @@ export default function Home() {
                 )}
               </div>
 
-              {/* View All Sprints button */}
+              {/* View All Sprints button — pinned outside scroll */}
               <button
                 onClick={() => setIsModalOpen(true)}
                 style={{
@@ -576,7 +528,7 @@ export default function Home() {
                   letterSpacing: '0.19px',
                   textTransform: 'uppercase',
                   width: 'fit-content',
-                  marginTop: S.xs,
+                  flexShrink: 0,
                 }}
               >
                 View All Sprints
@@ -596,6 +548,33 @@ export default function Home() {
             </div>
           </div>
         )}
+
+        {/* ── BLOG TEASER STRIP ── */}
+        <div
+          className="blog-teaser"
+          style={{
+            flexShrink: 0,
+            borderTop: `1px solid ${C.divider}`,
+            padding: `${S.sm} 0`,
+            display: 'flex',
+            alignItems: 'center',
+            gap: S.sm,
+          }}
+        >
+          <span style={{color: C.yellow, fontSize: '16px', lineHeight: 1}}>✦</span>
+          <span
+            style={{
+              fontFamily: F.inter,
+              fontWeight: 400,
+              fontSize: '14px',
+              lineHeight: '20px',
+              color: C.textPrimary,
+              opacity: 0.6,
+            }}
+          >
+            Coming soon: Essays, articles, and thinking out loud.
+          </span>
+        </div>
       </div>
 
       {/* ── MODAL ── */}
