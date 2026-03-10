@@ -115,15 +115,19 @@ export default function Home() {
             flex-direction: column !important;
             flex: none !important;
           }
+          .live-feed-section,
+          .raw-log-section {
+            flex: none !important;
+            overflow: visible !important;
+            height: auto !important;
+            border-right: none !important;
+            padding: ${S.md} !important;
+          }
           .raw-log-scroll {
             overflow-y: visible !important;
             max-height: none !important;
             flex: none !important;
-          }
-          .live-feed-section,
-          .raw-log-section {
-            border-right: none !important;
-            padding: ${S.md} !important;
+            height: auto !important;
           }
           .blog-teaser {
             margin-top: ${S.md} !important;
