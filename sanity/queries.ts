@@ -1,18 +1,17 @@
 export const SPRINT_STATUS_QUERY = `
-  *[_type == "sprintStatus"][0] {
+  *[_type == "sprintStatus" && isCurrent == true][0] {
     _id,
-    sprintNumber,
+    sprintName,
     deadline,
     technicalStatus,
     strategicObjective,
-    dateUpdated,
   }
 `
 
 export const RAW_LOG_QUERY = `
-  *[_type == "logEntry"] | order(order desc) {
+  *[_type == "logEntry"] | order(entryDate desc) {
     _id,
-    date,
+    entryDate,
     content,
   }
 `

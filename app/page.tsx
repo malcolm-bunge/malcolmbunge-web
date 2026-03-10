@@ -46,16 +46,15 @@ const META = {
 
 interface SprintStatus {
   _id: string
-  sprintNumber: string
+  sprintName: string
   deadline: string
   technicalStatus: string
   strategicObjective: string
-  dateUpdated: string
 }
 
 interface LogEntry {
   _id: string
-  date: string
+  entryDate: string
   content: string
 }
 
@@ -405,7 +404,7 @@ export default function Home() {
                         color: C.textPrimary,
                       }}
                     >
-                      <span>{sprintStatus.sprintNumber}</span>
+                      <span>Sprint {sprintStatus.sprintName}</span>
                       <span>{formatDateUK(sprintStatus.deadline)}</span>
                     </div>
                   </div>
@@ -535,7 +534,7 @@ export default function Home() {
                           color: C.blue,
                         }}
                       >
-                        {entry.date}
+                        {formatDateUK(entry.entryDate)}
                       </span>
                       <p
                         style={{
