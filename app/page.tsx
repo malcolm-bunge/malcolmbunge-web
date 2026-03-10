@@ -105,6 +105,54 @@ export default function Home() {
         overflow: 'hidden',
       }}
     >
+      <style>{`
+        @media (max-width: 1023px) {
+          /* Mobile: Adjust header */
+          .malcolm-header h1 {
+            font-size: 48px !important;
+            line-height: 48px !important;
+          }
+
+          .malcolm-header .tagline {
+            font-size: 14px !important;
+            line-height: 14px !important;
+          }
+
+          .malcolm-header p {
+            font-size: 16px !important;
+            line-height: 24px !important;
+          }
+
+          /* Mobile: Single column layout */
+          .two-col-wrapper {
+            flex-direction: column !important;
+          }
+
+          /* Mobile: Make sections full width */
+          .live-feed-section,
+          .raw-log-section {
+            width: 100% !important;
+            min-height: auto !important;
+          }
+
+          /* Mobile: Adjust font sizes in Live Feed */
+          .live-feed-section h3,
+          .raw-log-section h3 {
+            font-size: 24px !important;
+            margin-bottom: 16px !important;
+          }
+
+          /* Mobile: Better spacing */
+          .live-feed-box {
+            padding: 16px !important;
+            border-width: 1px !important;
+          }
+
+          .log-entry {
+            margin-bottom: 20px !important;
+          }
+        }
+      `}</style>
       {/* Background blur glow */}
       <div
         style={{
@@ -191,6 +239,7 @@ export default function Home() {
 
         {/* ── HEADER ── */}
         <div
+          className="malcolm-header"
           style={{
             paddingLeft: S.lg,
             paddingRight: S.lg,
@@ -272,6 +321,7 @@ export default function Home() {
           </div>
         ) : (
           <div
+            className="two-col-wrapper"
             style={{
               display: 'flex',
               flexDirection: 'row',
@@ -281,6 +331,7 @@ export default function Home() {
           >
             {/* LEFT: The Live Feed */}
             <div
+              className="live-feed-section"
               style={{
                 flex: '1 0 0',
                 minWidth: 0,
@@ -307,6 +358,7 @@ export default function Home() {
 
               {sprintStatus ? (
                 <div
+                  className="live-feed-box"
                   style={{
                     backgroundColor: C.blueFaded,
                     border: `1px solid ${C.blue}`,
@@ -431,6 +483,7 @@ export default function Home() {
 
             {/* RIGHT: The Raw Log */}
             <div
+              className="raw-log-section"
               style={{
                 flex: '1 0 0',
                 minWidth: 0,
@@ -466,6 +519,7 @@ export default function Home() {
                   logEntries.map((entry) => (
                     <div
                       key={entry._id}
+                      className="log-entry"
                       style={{
                         display: 'flex',
                         flexDirection: 'column',
