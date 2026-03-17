@@ -21,8 +21,9 @@
 }
 
 body {
-  background-color: #1b1b34;
-  color: #e1d9cc;
-  font-family: 'Inter', sans-serif;
+  background-color: #060612;
+  min-height: 100dvh;
+  color: #f2f2fa;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
 }

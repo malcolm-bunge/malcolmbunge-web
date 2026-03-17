@@ -1,30 +1,19 @@
 'use client'
 
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 
 import {sanityFetch} from '@/sanity/client'
-import {
-  SPRINT_STATUS_QUERY,
-  RAW_LOG_QUERY,
-} from '@/sanity/queries'
+import {SPRINT_STATUS_QUERY, RAW_LOG_QUERY} from '@/sanity/queries'
+import {TimeTheme, getThemeForHour, formatVirtualTime, getBlobAnimationDuration} from './timeThemes'
 
-// Design tokens
-const C = {
-  background: '#1b1b34',
-  yellow: '#fccb00',
-  blue: '#1da9ef',
-  blueFaded: 'rgba(29, 169, 239, 0.2)',
-  textPrimary: '#e1d9cc',
-  textDark: '#4d412d',
-  divider: 'rgba(225, 217, 204, 0.12)',
-}
-
+// ── Fonts ────────────────────────────────────────────────────────────────────
 const F = {
   fraunces: "'Fraunces', serif",
   poppins: "'Poppins', sans-serif",
   jakarta: "'Plus Jakarta Sans', sans-serif",
 }
 
+// ── Spacing ──────────────────────────────────────────────────────────────────
 const S = {
   xs: '8px',
   sm: '16px',
@@ -37,9 +26,14 @@ const S = {
 const META = {
   name: 'malcolm bunge',
   tagline: 'Design & Build',
-  intro: 'Currently building this portfolio with Claude. Everything you see is real-time work.',
+  intro: 'malcolmbunge_V1c_final_202603.com // Currently building this portfolio with Claude. Everything you see is real-time work.',
 }
 
+const ENTRIES_PER_PAGE = 3
+// Fast-forward: 1 real ms = PLAY_SPEED virtual minutes
+const PLAY_SPEED = 1 // 60 virtual minutes per real second (1 tick/s = 1 min)
+
+// ── Types ────────────────────────────────────────────────────────────────────
 interface SprintStatus {
   _id: string
   sprintName: string
@@ -54,8 +48,8 @@ interface LogEntry {
   content: string
 }
 
-// Format date to UK English (e.g., "19 March 2026")
-const formatDateUK = (dateString: string): string => {
+// ── Helpers ──────────────────────────────────────────────────────────────────
+const formatDateLong = (dateString: string): string => {
   const date = new Date(dateString + 'T00:00:00')
   return new Intl.DateTimeFormat('en-GB', {
     year: 'numeric',
@@ -64,11 +58,643 @@ const formatDateUK = (dateString: string): string => {
   }).format(date)
 }
 
+const formatDateShort = (dateString: string): string => {
+  const date = new Date(dateString + 'T00:00:00')
+  const d = String(date.getDate()).padStart(2, '0')
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const y = date.getFullYear()
+  return `${d}.${m}.${y}`
+}
+
+const transition = (duration = '3s') =>
+  `color ${duration} ease, background-color ${duration} ease, background ${duration} ease, border-color ${duration} ease, box-shadow ${duration} ease, opacity ${duration} ease`
+
+// ── Reusable: Pill button ────────────────────────────────────────────────────
+function PillButton({
+  onClick,
+  children,
+  size = 'sm',
+  disabled = false,
+  theme,
+  transitionDur,
+}: {
+  onClick?: () => void
+  children: React.ReactNode
+  size?: 'sm' | 'lg'
+  disabled?: boolean
+  theme: TimeTheme
+  transitionDur: string
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className="pressable"
+      style={{
+        backgroundColor: disabled
+          ? theme.isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)'
+          : theme.glassPanel,
+        color: disabled
+          ? theme.isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'
+          : theme.accent,
+        border: `1px solid ${disabled ? theme.divider : theme.glassBorder}`,
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+        padding: size === 'lg' ? '8px 20px' : '4px 16px',
+        height: size === 'lg' ? '48px' : 'auto',
+        borderRadius: '999px',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '8px',
+        fontFamily: F.jakarta,
+        fontWeight: 500,
+        fontSize: '16px',
+        lineHeight: '24px',
+        whiteSpace: 'nowrap',
+        flexShrink: 0,
+        // colour-only transitions (transform handled by .pressable)
+        transition: `color ${transitionDur} ease, background-color ${transitionDur} ease, border-color ${transitionDur} ease`,
+      }}
+    >
+      {children}
+    </button>
+  )
+}
+
+// ── Arrow icons ───────────────────────────────────────────────────────────────
+const ArrowRight = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5 12h14M13 6l6 6-6 6" />
+  </svg>
+)
+const ArrowLeft = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M19 12H5M11 18l-6-6 6-6" />
+  </svg>
+)
+
+// ── Icons ─────────────────────────────────────────────────────────────────────
+const MailIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="2" y="4" width="20" height="16" rx="2" />
+    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+  </svg>
+)
+const LinkedInIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+  </svg>
+)
+const SubstackIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M22.539 8.242H1.46V5.406h21.079v2.836zM1.46 10.042v10.17h21.079v-10.17H1.46zm21.079-5.906V1.5H1.46v2.636h21.079z" />
+  </svg>
+)
+
+// ── Card wrapper ──────────────────────────────────────────────────────────────
+function Card({
+  title,
+  children,
+  theme,
+  transitionDur,
+}: {
+  title: string
+  children: React.ReactNode
+  theme: TimeTheme
+  transitionDur: string
+}) {
+  return (
+    <div
+      className="card"
+      style={{
+        background: theme.glassPanel,
+        borderColor: theme.glassBorder,
+        boxShadow: theme.boxShadow,
+        transition: transition(transitionDur),
+      }}
+    >
+      <h2
+        style={{
+          fontFamily: F.fraunces,
+          fontWeight: 700,
+          fontSize: '24px',
+          lineHeight: '32px',
+          letterSpacing: '0.24px',
+          color: theme.accent,
+          margin: `0 0 ${S.md}`,
+          flexShrink: 0,
+          transition: transition(transitionDur),
+        }}
+      >
+        {title}
+      </h2>
+      <div className="card-body">{children}</div>
+    </div>
+  )
+}
+
+// ── Label ──────────────────────────────────────────────────────────────────────
+function Label({
+  children,
+  theme,
+  transitionDur,
+  muted = false,
+}: {
+  children: React.ReactNode
+  theme: TimeTheme
+  transitionDur: string
+  muted?: boolean
+}) {
+  return (
+    <span
+      style={{
+        fontFamily: F.jakarta,
+        fontWeight: 600,
+        fontSize: '14px',
+        lineHeight: '20px',
+        color: muted ? theme.textMuted : theme.accent,
+        transition: transition(transitionDur),
+      }}
+    >
+      {children}
+    </span>
+  )
+}
+
+// ── Time Widget ───────────────────────────────────────────────────────────────
+function TimeWidget({
+  virtualMinutes,
+  setVirtualMinutes,
+  isPlaying,
+  setIsPlaying,
+  theme,
+  transitionDur,
+}: {
+  virtualMinutes: number
+  setVirtualMinutes: (m: number | ((prev: number) => number)) => void
+  isPlaying: boolean
+  setIsPlaying: (v: boolean) => void
+  theme: TimeTheme
+  transitionDur: string
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    if (open) document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  const timeStr = formatVirtualTime(virtualMinutes)
+  const hour = (virtualMinutes / 60) % 24
+
+  // Current theme for the hour shown
+  const displayTheme = getThemeForHour(hour)
+
+  return (
+    <div ref={ref} style={{position: 'relative', flexShrink: 0}}>
+      {/* Trigger button */}
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="pressable"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '6px',
+          padding: '4px 14px',
+          background: theme.glassPanel,
+          border: `1px solid ${theme.glassBorder}`,
+          borderRadius: '999px',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          fontFamily: F.jakarta,
+          fontWeight: 500,
+          fontSize: '14px',
+          color: theme.textBody,
+          transition: `color ${transitionDur} ease, background ${transitionDur} ease, border-color ${transitionDur} ease`,
+        }}
+      >
+        <span style={{fontSize: '14px', lineHeight: 1}}>⚙️</span>
+        <span style={{letterSpacing: '0.5px'}}>{timeStr}</span>
+      </button>
+
+      {/* Panel */}
+      {open && (
+        <div
+          className="time-panel"
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 8px)',
+            right: 0,
+            width: '260px',
+            background: theme.modalBg,
+            backdropFilter: 'blur(32px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(32px) saturate(180%)',
+            border: `1px solid ${theme.glassBorder}`,
+            borderRadius: '16px',
+            padding: '20px',
+            zIndex: 90,
+            boxShadow: theme.boxShadow,
+            transition: transition(transitionDur),
+          }}
+        >
+          {/* Phase label + time */}
+          <div style={{marginBottom: '16px'}}>
+            <div
+              style={{
+                fontFamily: F.jakarta,
+                fontWeight: 600,
+                fontSize: '11px',
+                letterSpacing: '1px',
+                textTransform: 'uppercase',
+                color: theme.textMuted,
+                marginBottom: '4px',
+              }}
+            >
+              {displayTheme.icon} {displayTheme.label}
+            </div>
+            <div
+              style={{
+                fontFamily: F.fraunces,
+                fontWeight: 700,
+                fontSize: '32px',
+                lineHeight: 1,
+                color: theme.textBody,
+                letterSpacing: '1px',
+                transition: transition(transitionDur),
+              }}
+            >
+              {timeStr}
+            </div>
+          </div>
+
+          {/* Slider */}
+          <div style={{marginBottom: '16px'}}>
+            <style>{`
+              .time-slider {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 100%;
+                height: 4px;
+                border-radius: 2px;
+                outline: none;
+                cursor: pointer;
+              }
+              .time-slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                width: 14px;
+                height: 14px;
+                border-radius: 50%;
+                background: #EA526F;
+                cursor: pointer;
+                border: 2px solid white;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+              }
+              .time-slider::-moz-range-thumb {
+                width: 14px;
+                height: 14px;
+                border-radius: 50%;
+                background: #EA526F;
+                cursor: pointer;
+                border: 2px solid white;
+              }
+            `}</style>
+            <input
+              type="range"
+              min={0}
+              max={1439}
+              value={virtualMinutes}
+              onChange={(e) => {
+                setIsPlaying(false)
+                setVirtualMinutes(Number(e.target.value))
+              }}
+              className="time-slider"
+              style={{
+                background: `linear-gradient(to right, ${theme.accent} 0%, ${theme.accent} ${(virtualMinutes / 1439) * 100}%, ${theme.divider} ${(virtualMinutes / 1439) * 100}%, ${theme.divider} 100%)`,
+              }}
+            />
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                marginTop: '4px',
+                fontFamily: F.jakarta,
+                fontSize: '11px',
+                color: theme.textMuted,
+              }}
+            >
+              <span>00:00</span>
+              <span>12:00</span>
+              <span>23:59</span>
+            </div>
+          </div>
+
+          {/* Controls */}
+          <div style={{display: 'flex', gap: '8px'}}>
+            {/* Play/Pause button */}
+            <button
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="pressable"
+              style={{
+                flex: 1,
+                padding: '8px 12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                background: isPlaying ? theme.accent : theme.glassPanel,
+                color: isPlaying ? '#fff' : theme.accent,
+                border: `1px solid ${isPlaying ? 'transparent' : theme.glassBorder}`,
+                borderRadius: '8px',
+                fontFamily: F.jakarta,
+                fontWeight: 600,
+                fontSize: '13px',
+                transition: 'background 0.2s, color 0.2s',
+              }}
+            >
+              {isPlaying ? (
+                <>
+                  <span>⏸</span> Pause
+                </>
+              ) : (
+                <>
+                  <span>▶▶</span> Fast-forward
+                </>
+              )}
+            </button>
+
+            {/* Reset button */}
+            <button
+              onClick={() => {
+                setIsPlaying(false)
+                const now = new Date()
+                setVirtualMinutes(now.getHours() * 60 + now.getMinutes())
+              }}
+              className="pressable"
+              style={{
+                flex: 1,
+                padding: '8px 12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                background: theme.glassPanel,
+                color: theme.accent,
+                border: `1px solid ${theme.glassBorder}`,
+                borderRadius: '8px',
+                fontFamily: F.jakarta,
+                fontWeight: 600,
+                fontSize: '13px',
+                transition: 'background 0.2s, color 0.2s',
+              }}
+            >
+              <span>↻</span> Reset
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Contact Modal ─────────────────────────────────────────────────────────────
+function ContactModal({
+  isOpen,
+  onClose,
+  theme,
+  transitionDur,
+}: {
+  isOpen: boolean
+  onClose: () => void
+  theme: TimeTheme
+  transitionDur: string
+}) {
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape)
+      return () => document.removeEventListener('keydown', handleEscape)
+    }
+  }, [isOpen, onClose])
+
+  if (!isOpen) return null
+
+  const contacts = [
+    {label: 'Email', value: 'hallo@malcolmbunge.de', href: 'mailto:hallo@malcolmbunge.de', icon: MailIcon},
+    {label: 'LinkedIn', value: 'linkedin.com/in/malcolmbunge', href: 'https://linkedin.com/in/malcolmbunge', icon: LinkedInIcon},
+    {label: 'Substack', value: 'mbunge.substack.com', href: 'https://mbunge.substack.com', icon: SubstackIcon},
+  ]
+
+  return (
+    <>
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(0,0,0,0.4)',
+          zIndex: 98,
+        }}
+        onClick={onClose}
+      />
+      <div
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          background: theme.modalBg,
+          backdropFilter: 'blur(32px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(32px) saturate(180%)',
+          border: `1px solid ${theme.glassBorder}`,
+          borderRadius: '24px',
+          padding: S.lg,
+          maxWidth: '400px',
+          width: 'calc(100% - 48px)',
+          zIndex: 99,
+          boxShadow: theme.boxShadow,
+          transition: transition(transitionDur),
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div style={{marginBottom: S.lg}}>
+          <h3
+            style={{
+              fontFamily: F.fraunces,
+              fontWeight: 700,
+              fontSize: '24px',
+              lineHeight: '32px',
+              color: theme.textBody,
+              margin: '0 0 8px',
+              transition: transition(transitionDur),
+            }}
+          >
+            Get in Touch
+          </h3>
+          <p
+            style={{
+              fontFamily: F.jakarta,
+              fontWeight: 400,
+              fontSize: '14px',
+              lineHeight: '20px',
+              color: theme.textMuted,
+              margin: 0,
+              transition: transition(transitionDur),
+            }}
+          >
+            Reach out via any of these channels.
+          </p>
+        </div>
+
+        <div style={{display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: S.lg}}>
+          {contacts.map((contact) => {
+            const Icon = contact.icon
+            return (
+              <a
+                key={contact.label}
+                href={contact.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="contact-card"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  padding: '12px 16px',
+                  background: theme.glassPanel,
+                  border: `1px solid ${theme.glassBorder}`,
+                  borderRadius: '12px',
+                  textDecoration: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                <div style={{color: theme.accent, display: 'flex', alignItems: 'center'}}>
+                  <Icon />
+                </div>
+                <div style={{flex: 1}}>
+                  <p
+                    style={{
+                      fontFamily: F.jakarta,
+                      fontWeight: 600,
+                      fontSize: '14px',
+                      lineHeight: '20px',
+                      color: theme.textBody,
+                      margin: 0,
+                      transition: transition(transitionDur),
+                    }}
+                  >
+                    {contact.label}
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: F.jakarta,
+                      fontWeight: 400,
+                      fontSize: '12px',
+                      lineHeight: '16px',
+                      color: theme.textMuted,
+                      margin: '2px 0 0',
+                      transition: transition(transitionDur),
+                    }}
+                  >
+                    {contact.value}
+                  </p>
+                </div>
+              </a>
+            )
+          })}
+        </div>
+
+        <button
+          onClick={onClose}
+          className="pressable"
+          style={{
+            width: '100%',
+            padding: '8px 16px',
+            background: theme.glassPanel,
+            border: `1px solid ${theme.glassBorder}`,
+            borderRadius: '8px',
+            color: theme.textMuted,
+            fontFamily: F.jakarta,
+            fontWeight: 500,
+            fontSize: '14px',
+          }}
+        >
+          Close
+        </button>
+      </div>
+    </>
+  )
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
 export default function Home() {
   const [sprintStatus, setSprintStatus] = useState<SprintStatus | null>(null)
   const [logEntries, setLogEntries] = useState<LogEntry[]>([])
   const [loading, setLoading] = useState(true)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [logPage, setLogPage] = useState(0)
+  const [logFading, setLogFading] = useState(false)
+  const [logContainerHeight, setLogContainerHeight] = useState<string | undefined>(undefined)
+  const [contactOpen, setContactOpen] = useState(false)
+  const logEntriesRef = useRef<HTMLDivElement>(null)
+
+  const changePage = (next: number) => {
+    // Pin current height before content swaps
+    if (logEntriesRef.current) {
+      setLogContainerHeight(`${logEntriesRef.current.offsetHeight}px`)
+    }
+    setLogFading(true)
+    setTimeout(() => {
+      setLogPage(next)
+      setLogFading(false)
+      // Two rAFs: first lets React paint the new content, second lets the browser measure it
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (logEntriesRef.current) {
+            setLogContainerHeight(`${logEntriesRef.current.scrollHeight}px`)
+          }
+        })
+      })
+    }, 150)
+  }
+
+  // ── Time state ─────────────────────────────────────────────────────────────
+  const [virtualMinutes, setVirtualMinutes] = useState<number>(() => {
+    const now = new Date()
+    return now.getHours() * 60 + now.getMinutes()
+  })
+  const [isPlaying, setIsPlaying] = useState(false)
+  const playRef = useRef(isPlaying)
+  playRef.current = isPlaying
+
+  // Fast-forward ticker
+  useEffect(() => {
+    if (!isPlaying) return
+    const id = setInterval(() => {
+      setVirtualMinutes((m) => (m + PLAY_SPEED) % 1440)
+    }, 1000 / 60)
+    return () => clearInterval(id)
+  }, [isPlaying])
+
+  // Real-time clock tick (every minute, when not playing)
+  useEffect(() => {
+    if (isPlaying) return
+    const id = setInterval(() => {
+      const now = new Date()
+      setVirtualMinutes(now.getHours() * 60 + now.getMinutes())
+    }, 60_000)
+    return () => clearInterval(id)
+  }, [isPlaying])
+
+  const virtualHour = virtualMinutes / 60
+  const theme = getThemeForHour(virtualHour)
+  const transitionDur = isPlaying ? '0.2s' : '3s'
 
   useEffect(() => {
     async function fetchData() {
@@ -88,195 +714,293 @@ export default function Home() {
     fetchData()
   }, [])
 
+  const totalPages = Math.ceil(logEntries.length / ENTRIES_PER_PAGE)
+  const pagedEntries = logEntries.slice(
+    logPage * ENTRIES_PER_PAGE,
+    (logPage + 1) * ENTRIES_PER_PAGE,
+  )
+
   return (
     <div
-      className="page-root"
       style={{
-        backgroundColor: C.background,
-        height: '100dvh',
+        backgroundColor: theme.bgColor,
+        minHeight: '100dvh',
         width: '100%',
         fontFamily: F.jakarta,
-        color: C.textPrimary,
-        position: 'relative',
-        overflow: 'hidden',
+        color: theme.textBody,
+        transition: transition(transitionDur),
       }}
     >
       <style>{`
+        * { box-sizing: border-box; }
+
+        .card {
+          flex: 1 0 0;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          border-radius: 24px;
+          backdrop-filter: blur(24px) saturate(160%);
+          -webkit-backdrop-filter: blur(24px) saturate(160%);
+          border: 1px solid transparent;
+          padding: 32px;
+        }
+        .card-body {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        /* ── Animated background blurs ── */
+        .blurs-container {
+          position: fixed;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          pointer-events: none;
+          z-index: 0;
+          overflow: hidden;
+          --blob-dur: 15s;
+        }
+        .blob { position: absolute; border-radius: 50%; }
+
+        /* Duration driven by CSS custom property — each blob has its own multiplier via delay offset */
+        .blob-1 { width: 640px; height: 640px; top: -15%; right: -5%;  filter: blur(90px);  animation: float-1 calc(var(--blob-dur) * 1.00) ease-in-out    0s infinite; }
+        .blob-2 { width: 600px; height: 600px; bottom: -5%; left: -5%; filter: blur(90px);  animation: float-2 calc(var(--blob-dur) * 1.15) ease-in-out   -4s infinite; }
+        .blob-3 { width: 480px; height: 480px; top: 28%; left: -8%;   filter: blur(80px);  animation: float-3 calc(var(--blob-dur) * 1.05) ease-in-out   -8s infinite; }
+        .blob-4 { width: 440px; height: 440px; top: 42%; right: 4%;   filter: blur(80px);  animation: float-4 calc(var(--blob-dur) * 0.88) ease-in-out  -12s infinite; }
+        .blob-5 { width: 320px; height: 320px; top: 12%; left: 32%;   filter: blur(70px);  animation: float-5 calc(var(--blob-dur) * 0.72) ease-in-out   -3s infinite; }
+        .blob-6 { width: 280px; height: 280px; top: 62%; left: 52%;   filter: blur(65px);  animation: float-6 calc(var(--blob-dur) * 1.28) ease-in-out   -7s infinite; }
+        .blob-7 { width: 780px; height: 780px; top: 22%; left: 18%;   filter: blur(130px); animation: float-7 calc(var(--blob-dur) * 1.45) ease-in-out  -14s infinite; }
+
+        @keyframes float-1 {
+          0%, 100% { transform: translate(0, 0); }
+          20%  { transform: translate(120px, -140px); }
+          50%  { transform: translate(70px, 100px); }
+          75%  { transform: translate(-110px, -50px); }
+        }
+        @keyframes float-2 {
+          0%, 100% { transform: translate(0, 0); }
+          25%  { transform: translate(-130px, 90px); }
+          55%  { transform: translate(110px, 120px); }
+          80%  { transform: translate(40px, -110px); }
+        }
+        @keyframes float-3 {
+          0%, 100% { transform: translate(0, 0); }
+          30%  { transform: translate(80px, 150px); }
+          60%  { transform: translate(-110px, 70px); }
+          80%  { transform: translate(130px, -130px); }
+        }
+        @keyframes float-4 {
+          0%, 100% { transform: translate(0, 0); }
+          25%  { transform: translate(150px, -90px); }
+          50%  { transform: translate(-70px, 140px); }
+          75%  { transform: translate(-130px, 40px); }
+        }
+        @keyframes float-5 {
+          0%, 100% { transform: translate(0, 0); }
+          20%  { transform: translate(-60px, 110px); }
+          45%  { transform: translate(90px, 40px); }
+          70%  { transform: translate(-40px, -100px); }
+          85%  { transform: translate(70px, 60px); }
+        }
+        @keyframes float-6 {
+          0%, 100% { transform: translate(0, 0); }
+          30%  { transform: translate(100px, 80px); }
+          55%  { transform: translate(-90px, -90px); }
+          80%  { transform: translate(60px, 130px); }
+        }
+        @keyframes float-7 {
+          0%, 100% { transform: translate(0, 0); }
+          25%  { transform: translate(160px, -90px); }
+          50%  { transform: translate(-80px, 140px); }
+          75%  { transform: translate(120px, 80px); }
+        }
+
+        .content-wrapper { position: relative; z-index: 1; }
+
         @media (max-width: 1023px) {
-          .page-root {
-            height: auto !important;
-            min-height: 100dvh !important;
-            overflow: auto !important;
-          }
-          .main-wrapper {
-            height: auto !important;
-          }
-          .two-col-wrapper {
-            flex-direction: column !important;
-            flex: none !important;
-          }
-          .live-feed-section,
-          .raw-log-section {
-            flex: none !important;
-            overflow: visible !important;
-            height: auto !important;
-            border-right: none !important;
-            padding: ${S.md} !important;
-          }
-          .raw-log-scroll {
-            overflow-y: visible !important;
-            max-height: none !important;
-            flex: none !important;
-            height: auto !important;
-          }
-          .blog-teaser {
-            margin-top: ${S.md} !important;
-          }
-          .nav-intro {
-            display: none !important;
-          }
-          h1.main-name {
-            font-size: 48px !important;
-            line-height: 48px !important;
-          }
+          .two-col-wrapper { flex-direction: column !important; }
+          .card { flex: 0 0 auto; width: 100%; }
+          .card-body { flex: 0 0 auto; }
+          .main-name { font-size: 48px !important; line-height: 52px !important; }
+          .nav-intro { display: none !important; }
+          .nav-bar { justify-content: flex-end !important; }
+          .pagination-row { flex-wrap: wrap !important; }
+          .pagination-row > button { flex: 1 1 auto; justify-content: center; }
+        }
+
+        /* ── Press & hover animations ── */
+        .pressable {
+          transform: translateY(0) scale(1);
+          transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
+                      box-shadow 0.18s ease;
+          will-change: transform;
+          cursor: pointer;
+        }
+        .pressable:hover:not(:disabled) {
+          transform: translateY(-2px) scale(1);
+        }
+        .pressable:active:not(:disabled) {
+          transform: translateY(0) scale(0.96);
+          transition: transform 0.08s ease-out;
+          animation: press-glow 0.35s ease-out forwards;
+        }
+        .pressable:disabled {
+          cursor: not-allowed;
+          opacity: 0.45;
+        }
+        @keyframes press-glow {
+          0%   { box-shadow: 0 0 0 0 rgba(234, 82, 111, 0.45); }
+          40%  { box-shadow: 0 0 0 6px rgba(234, 82, 111, 0.2); }
+          100% { box-shadow: 0 0 0 10px rgba(234, 82, 111, 0); }
+        }
+
+        /* ── Time widget panel entrance ── */
+        .time-panel {
+          animation: panelFadeIn 0.18s ease forwards;
+        }
+        @keyframes panelFadeIn {
+          from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+          to   { opacity: 1; transform: translateY(0)    scale(1); }
+        }
+
+        /* ── Log entries fade ── */
+        .log-entries {
+          display: flex;
+          flex-direction: column;
+          gap: 28px;
+          transition: opacity 0.15s ease;
+        }
+        .log-entries.fading {
+          opacity: 0;
+        }
+
+        /* ── Contact card hover ── */
+        .contact-card {
+          transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
+                      background 0.15s ease;
+        }
+        .contact-card:hover {
+          transform: translateY(-2px);
+        }
+        .contact-card:active {
+          transform: scale(0.98);
+          transition: transform 0.08s ease-out;
         }
       `}</style>
 
-      {/* Background blur glow */}
+      {/* ── Animated blobs ── */}
       <div
-        style={{
-          position: 'absolute',
-          top: '-319px',
-          left: '-574px',
-          width: '2657px',
-          height: '1691px',
-          background:
-            'radial-gradient(ellipse 55% 35% at 62% 28%, rgba(168,85,247,0.22) 0%, rgba(29,169,239,0.08) 45%, transparent 70%)',
-          filter: 'blur(80px)',
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
+        className="blurs-container"
+        style={{'--blob-dur': `${getBlobAnimationDuration(virtualHour)}s`} as React.CSSProperties}
+      >
+        {(() => {
+          const tr = `background ${transitionDur} ease, opacity ${transitionDur} ease`
+          const o = theme.blobOpacity
+          return (
+            <>
+              <div className="blob blob-1" style={{ background: `radial-gradient(circle, ${theme.blob1} 0%, transparent 70%)`, opacity: o,        transition: tr }} />
+              <div className="blob blob-2" style={{ background: `radial-gradient(circle, ${theme.blob2} 0%, transparent 70%)`, opacity: o,        transition: tr }} />
+              <div className="blob blob-3" style={{ background: `radial-gradient(circle, ${theme.blob3} 0%, transparent 65%)`, opacity: o * 0.70, transition: tr }} />
+              <div className="blob blob-4" style={{ background: `radial-gradient(circle, ${theme.blob4} 0%, transparent 65%)`, opacity: o * 0.65, transition: tr }} />
+              <div className="blob blob-5" style={{ background: `radial-gradient(circle, ${theme.blob1} 0%, transparent 70%)`, opacity: o * 0.55, transition: tr }} />
+              <div className="blob blob-6" style={{ background: `radial-gradient(circle, ${theme.blob2} 0%, transparent 70%)`, opacity: o * 0.50, transition: tr }} />
+              <div className="blob blob-7" style={{ background: `radial-gradient(circle, ${theme.blob3} 0%, transparent 60%)`, opacity: o * 0.30, transition: tr }} />
+            </>
+          )
+        })()}
+      </div>
 
-      {/* Main wrapper */}
       <div
-        className="main-wrapper"
+        className="content-wrapper"
         style={{
-          position: 'relative',
-          zIndex: 1,
           maxWidth: '1512px',
           margin: '0 auto',
-          width: '100%',
-          height: '100%',
+          padding: `${S.xxl} ${S.lg}`,
           display: 'flex',
           flexDirection: 'column',
-          padding: `${S.lg} ${S.lg} 0`,
-          boxSizing: 'border-box',
+          gap: S.xxl,
         }}
       >
-        {/* ── NAV BAR ── */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexShrink: 0,
-            paddingBottom: S.md,
-          }}
-        >
-          <span
-            className="nav-intro"
-            style={{
-              fontFamily: F.jakarta,
-              fontWeight: 400,
-              fontSize: '14px',
-              lineHeight: '20px',
-              color: C.textPrimary,
-              opacity: 0.7,
-            }}
+        {/* ── TOP SECTION ── */}
+        <div style={{display: 'flex', flexDirection: 'column', gap: 0}}>
+          {/* Nav bar */}
+          <div
+            className="nav-bar"
+            style={{display: 'flex', alignItems: 'flex-end', gap: '10px', marginBottom: S.xs}}
           >
-            {META.intro}
-          </span>
-          <div style={{display: 'flex', gap: '10px', marginLeft: 'auto'}}>
-            <button
+            <p
+              className="nav-intro"
               style={{
-                backgroundColor: C.yellow,
-                color: C.textDark,
-                border: 'none',
-                padding: '4px 8px',
-                cursor: 'pointer',
+                flex: 1,
                 fontFamily: F.jakarta,
-                fontWeight: 400,
-                fontSize: '16px',
-                lineHeight: '24px',
+                fontWeight: 500,
+                fontSize: '14px',
+                lineHeight: '20px',
+                color: theme.textMuted,
+                margin: 0,
+                transition: transition(transitionDur),
               }}
             >
-              About
-            </button>
-            <button
-              style={{
-                backgroundColor: C.yellow,
-                color: C.textDark,
-                border: 'none',
-                padding: '4px 8px',
-                cursor: 'pointer',
-                fontFamily: F.jakarta,
-                fontWeight: 400,
-                fontSize: '16px',
-                lineHeight: '24px',
-              }}
-            >
+              {META.intro}
+            </p>
+            <TimeWidget
+              virtualMinutes={virtualMinutes}
+              setVirtualMinutes={setVirtualMinutes}
+              isPlaying={isPlaying}
+              setIsPlaying={setIsPlaying}
+              theme={theme}
+              transitionDur={transitionDur}
+            />
+            <PillButton onClick={() => setContactOpen(true)} theme={theme} transitionDur={transitionDur}>
               Contact
-            </button>
+            </PillButton>
           </div>
-        </div>
 
-        {/* ── HEADER ── */}
-        <div
-          style={{
-            flexShrink: 0,
-            paddingBottom: S.lg,
-          }}
-        >
+          {/* Name + tagline */}
           <h1
             className="main-name"
             style={{
               fontFamily: F.fraunces,
-              fontWeight: 900,
+              fontWeight: 700,
               fontSize: '64px',
               lineHeight: '64px',
-              color: C.yellow,
-              margin: 0,
+              letterSpacing: '0.64px',
+              color: theme.textBody,
+              margin: '0 0 2px',
               textTransform: 'lowercase',
+              transition: transition(transitionDur),
             }}
           >
             {META.name}
           </h1>
-          <div
+          <p
             style={{
               fontFamily: F.poppins,
               fontWeight: 600,
               fontSize: '14px',
-              lineHeight: '20px',
+              lineHeight: '19px',
               letterSpacing: '0.98px',
               textTransform: 'uppercase',
-              color: C.yellow,
-              marginTop: '2px',
+              color: theme.accent,
+              margin: 0,
+              transition: transition(transitionDur),
             }}
           >
             {META.tagline}
-          </div>
+          </p>
         </div>
 
-        {/* ── TWO COLUMNS ── */}
+        {/* ── CARDS ── */}
         {loading ? (
           <div
             style={{
-              flex: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: C.yellow,
+              textAlign: 'center',
+              color: theme.textMuted,
+              padding: S.xxl,
+              fontFamily: F.jakarta,
+              transition: transition(transitionDur),
             }}
           >
             Loading...
@@ -284,72 +1008,16 @@ export default function Home() {
         ) : (
           <div
             className="two-col-wrapper"
-            style={{
-              flex: '1 1 0',
-              minHeight: 0,
-              display: 'flex',
-              gap: '1px',
-              borderTop: `1px solid ${C.divider}`,
-            }}
+            style={{display: 'flex', gap: S.lg, alignItems: 'stretch'}}
           >
-            {/* LEFT: The Live Feed */}
-            <div
-              className="live-feed-section"
-              style={{
-                flex: '1 0 0',
-                minWidth: 0,
-                padding: S.lg,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: S.sm,
-                borderRight: `1px solid ${C.divider}`,
-                overflow: 'hidden',
-              }}
-            >
-              <h2
-                style={{
-                  fontFamily: F.fraunces,
-                  fontWeight: 700,
-                  fontSize: '24px',
-                  lineHeight: '32px',
-                  letterSpacing: '0.24px',
-                  textTransform: 'lowercase',
-                  color: C.yellow,
-                  margin: 0,
-                  flexShrink: 0,
-                }}
-              >
-                the live feed
-              </h2>
-
+            {/* ── LIVE FEED ── */}
+            <Card title="the live feed" theme={theme} transitionDur={transitionDur}>
               {sprintStatus ? (
-                <div
-                  className="live-feed-box"
-                  style={{
-                    backgroundColor: C.blueFaded,
-                    border: `1px solid ${C.blue}`,
-                    padding: S.lg,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: S.sm,
-                  }}
-                >
-                  {/* Current Focus + Deadline */}
+                <>
                   <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        gap: S.sm,
-                        fontFamily: F.jakarta,
-                        fontWeight: 400,
-                        fontSize: '14px',
-                        lineHeight: '20px',
-                        color: C.yellow,
-                      }}
-                    >
-                      <span>Current Focus</span>
-                      <span>Deadline</span>
+                    <div style={{display: 'flex', justifyContent: 'space-between', gap: S.sm}}>
+                      <Label theme={theme} transitionDur={transitionDur} muted>Current Focus</Label>
+                      <Label theme={theme} transitionDur={transitionDur} muted>Deadline</Label>
                     </div>
                     <div
                       style={{
@@ -358,31 +1026,22 @@ export default function Home() {
                         gap: S.sm,
                         fontFamily: F.jakarta,
                         fontWeight: 700,
-                        fontSize: '19px',
+                        fontSize: '20px',
                         lineHeight: '16px',
-                        letterSpacing: '0.19px',
-                        textTransform: 'lowercase',
-                        color: C.textPrimary,
+                        letterSpacing: '0.2px',
+                        color: theme.accent,
+                        transition: transition(transitionDur),
                       }}
                     >
                       <span>Sprint {sprintStatus.sprintName}</span>
-                      <span>{formatDateUK(sprintStatus.deadline)}</span>
+                      <span style={{whiteSpace: 'nowrap'}}>
+                        {formatDateShort(sprintStatus.deadline)}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Technical Status */}
-                  <div style={{display: 'flex', flexDirection: 'column'}}>
-                    <span
-                      style={{
-                        fontFamily: F.jakarta,
-                        fontWeight: 400,
-                        fontSize: '14px',
-                        lineHeight: '20px',
-                        color: C.blue,
-                      }}
-                    >
-                      Technical Status
-                    </span>
+                  <div style={{display: 'flex', flexDirection: 'column', gap: '2px'}}>
+                    <Label theme={theme} transitionDur={transitionDur}>Technical Status</Label>
                     <p
                       style={{
                         fontFamily: F.jakarta,
@@ -390,27 +1049,17 @@ export default function Home() {
                         fontWeight: 400,
                         fontSize: '16px',
                         lineHeight: '28px',
-                        color: C.textPrimary,
+                        color: theme.textBody,
                         margin: 0,
+                        transition: transition(transitionDur),
                       }}
                     >
                       {sprintStatus.technicalStatus}
                     </p>
                   </div>
 
-                  {/* Strategic Objective */}
-                  <div style={{display: 'flex', flexDirection: 'column'}}>
-                    <span
-                      style={{
-                        fontFamily: F.jakarta,
-                        fontWeight: 400,
-                        fontSize: '14px',
-                        lineHeight: '20px',
-                        color: C.blue,
-                      }}
-                    >
-                      Strategic Objective
-                    </span>
+                  <div style={{display: 'flex', flexDirection: 'column', gap: '2px'}}>
+                    <Label theme={theme} transitionDur={transitionDur}>Strategic Objective</Label>
                     <p
                       style={{
                         fontFamily: F.jakarta,
@@ -418,78 +1067,74 @@ export default function Home() {
                         fontWeight: 400,
                         fontSize: '16px',
                         lineHeight: '28px',
-                        color: C.textPrimary,
+                        color: theme.textBody,
                         margin: 0,
+                        transition: transition(transitionDur),
                       }}
                     >
                       {sprintStatus.strategicObjective}
                     </p>
                   </div>
-                </div>
+                </>
               ) : (
-                <p style={{color: C.blue}}>No sprint status available</p>
+                <p style={{color: theme.textMuted, margin: 0}}>No sprint status available.</p>
               )}
-            </div>
+            </Card>
 
-            {/* RIGHT: The Raw Log */}
-            <div
-              className="raw-log-section"
-              style={{
-                flex: '1 0 0',
-                minWidth: 0,
-                padding: S.lg,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: S.sm,
-                overflow: 'hidden',
-              }}
-            >
-              <h2
-                style={{
-                  fontFamily: F.fraunces,
-                  fontWeight: 700,
-                  fontSize: '24px',
-                  lineHeight: '32px',
-                  letterSpacing: '0.24px',
-                  textTransform: 'lowercase',
-                  color: C.yellow,
-                  margin: 0,
-                  flexShrink: 0,
-                }}
-              >
-                the raw log
-              </h2>
+            {/* ── RAW LOG ── */}
+            <Card title="the raw log" theme={theme} transitionDur={transitionDur}>
+              {totalPages > 1 && (
+                <div
+                  className="pagination-row"
+                  style={{display: 'flex', justifyContent: 'space-between', gap: '8px'}}
+                >
+                  <PillButton
+                    size="lg"
+                    disabled={logPage === totalPages - 1}
+                    onClick={() => changePage(Math.min(logPage + 1, totalPages - 1))}
+                    theme={theme}
+                    transitionDur={transitionDur}
+                  >
+                    <ArrowLeft />
+                    Previous Entries
+                  </PillButton>
+                  <PillButton
+                    size="lg"
+                    disabled={logPage === 0}
+                    onClick={() => changePage(Math.max(logPage - 1, 0))}
+                    theme={theme}
+                    transitionDur={transitionDur}
+                  >
+                    Recent Entries
+                    <ArrowRight />
+                  </PillButton>
+                </div>
+              )}
 
-              {/* Scrollable log entries */}
               <div
-                className="raw-log-scroll"
                 style={{
-                  flex: '1 1 0',
-                  minHeight: 0,
-                  overflowY: 'auto',
+                  overflow: 'hidden',
+                  height: logContainerHeight,
+                  transition: 'height 0.25s ease',
                 }}
               >
-                {logEntries.length > 0 ? (
-                  logEntries.map((entry) => (
-                    <div
-                      key={entry._id}
-                      className="log-entry"
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        marginBottom: S.sm,
-                      }}
-                    >
+                <div ref={logEntriesRef} className={`log-entries${logFading ? ' fading' : ''}`}>
+                {pagedEntries.length > 0 ? (
+                  pagedEntries.map((entry) => (
+                    <div key={entry._id} style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
+                      <Label theme={theme} transitionDur={transitionDur} muted>Sprint 01</Label>
                       <span
                         style={{
                           fontFamily: F.jakarta,
-                          fontWeight: 400,
-                          fontSize: '14px',
-                          lineHeight: '28px',
-                          color: C.blue,
+                          fontWeight: 700,
+                          fontSize: '20px',
+                          lineHeight: '16px',
+                          letterSpacing: '0.2px',
+                          color: theme.accent,
+                          transition: transition(transitionDur),
                         }}
                       >
-                        {formatDateUK(entry.entryDate)}
+                        {formatDateLong(entry.entryDate)}
                       </span>
                       <p
                         style={{
@@ -497,8 +1142,9 @@ export default function Home() {
                           fontWeight: 400,
                           fontSize: '16px',
                           lineHeight: '28px',
-                          color: C.textPrimary,
+                          color: theme.textBody,
                           margin: 0,
+                          transition: transition(transitionDur),
                         }}
                       >
                         {entry.content}
@@ -506,73 +1152,34 @@ export default function Home() {
                     </div>
                   ))
                 ) : (
-                  <p style={{color: C.blue}}>No log entries yet</p>
+                  <p style={{color: theme.textMuted, margin: 0}}>No log entries yet.</p>
                 )}
+                </div>
               </div>
-
-              {/* View All Sprints button — pinned outside scroll */}
-              <button
-                onClick={() => setIsModalOpen(true)}
-                style={{
-                  backgroundColor: C.yellow,
-                  color: C.textDark,
-                  border: 'none',
-                  padding: '8px 16px',
-                  height: '48px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  fontFamily: F.jakarta,
-                  fontWeight: 700,
-                  fontSize: '19px',
-                  lineHeight: '16px',
-                  letterSpacing: '0.19px',
-                  textTransform: 'lowercase',
-                  width: 'fit-content',
-                  flexShrink: 0,
-                }}
-              >
-                View all sprints
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </button>
-            </div>
+            </Card>
           </div>
         )}
 
-        {/* ── BLOG TEASER STRIP ── */}
+        {/* ── FOOTER STRIP ── */}
         <div
-          className="blog-teaser"
           style={{
-            flexShrink: 0,
-            borderTop: `1px solid ${C.divider}`,
-            padding: `${S.sm} 0`,
             display: 'flex',
             alignItems: 'center',
             gap: S.sm,
+            borderTop: `1px solid ${theme.divider}`,
+            paddingTop: S.sm,
+            transition: transition(transitionDur),
           }}
         >
-          <span style={{color: C.yellow, fontSize: '16px', lineHeight: 1}}>✦</span>
+          <span style={{color: theme.accent, fontSize: '16px', lineHeight: 1, transition: transition(transitionDur)}}>✦</span>
           <span
             style={{
               fontFamily: F.jakarta,
               fontWeight: 400,
               fontSize: '14px',
               lineHeight: '20px',
-              color: C.textPrimary,
-              opacity: 0.6,
+              color: theme.textMuted,
+              transition: transition(transitionDur),
             }}
           >
             Coming soon: Essays, articles, and thinking out loud.
@@ -580,100 +1187,12 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── MODAL ── */}
-      {isModalOpen && (
-        <div
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setIsModalOpen(false)
-          }}
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.75)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: S.lg,
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: C.background,
-              border: `1px solid ${C.blue}`,
-              padding: S.lg,
-              maxWidth: '800px',
-              width: '100%',
-              maxHeight: '80vh',
-              overflowY: 'auto',
-              position: 'relative',
-            }}
-          >
-            <button
-              onClick={() => setIsModalOpen(false)}
-              aria-label="Close"
-              style={{
-                position: 'absolute',
-                top: S.lg,
-                right: S.lg,
-                backgroundColor: 'transparent',
-                border: 'none',
-                color: C.yellow,
-                fontSize: '32px',
-                cursor: 'pointer',
-                padding: 0,
-                lineHeight: 1,
-              }}
-            >
-              ✕
-            </button>
-            <h2
-              style={{
-                fontFamily: F.poppins,
-                fontWeight: 800,
-                fontSize: '24px',
-                lineHeight: '32px',
-                letterSpacing: '0.24px',
-                textTransform: 'uppercase',
-                color: C.yellow,
-                marginTop: 0,
-                marginBottom: S.lg,
-                paddingRight: S.xxl,
-              }}
-            >
-              All Previous Sprints
-            </h2>
-            <p
-              style={{
-                fontFamily: F.jakarta,
-                fontWeight: 400,
-                fontSize: '16px',
-                lineHeight: '28px',
-                color: C.textPrimary,
-                margin: 0,
-              }}
-            >
-              This is the archive of all previous sprints and milestones. The raw log shows recent history. More sprints will be documented as the project evolves.
-            </p>
-            <p
-              style={{
-                fontFamily: F.jakarta,
-                fontWeight: 400,
-                fontSize: '14px',
-                lineHeight: '20px',
-                color: C.blue,
-                marginTop: S.lg,
-                marginBottom: 0,
-              }}
-            >
-              Coming soon: Full sprint archive with detailed documentation.
-            </p>
-          </div>
-        </div>
-      )}
+      <ContactModal
+        isOpen={contactOpen}
+        onClose={() => setContactOpen(false)}
+        theme={theme}
+        transitionDur={transitionDur}
+      />
     </div>
   )
 }
