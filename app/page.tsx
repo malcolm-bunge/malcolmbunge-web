@@ -1,6 +1,7 @@
 'use client'
 
 import {useEffect, useRef, useState} from 'react'
+import Link from 'next/link'
 
 import {sanityFetch} from '@/sanity/client'
 import {SPRINT_STATUS_QUERY, RAW_LOG_QUERY} from '@/sanity/queries'
@@ -953,6 +954,11 @@ export default function Home() {
               theme={theme}
               transitionDur={transitionDur}
             />
+            <Link href="/blog" style={{textDecoration: 'none'}}>
+              <PillButton theme={theme} transitionDur={transitionDur}>
+                Blog
+              </PillButton>
+            </Link>
             <PillButton onClick={() => setContactOpen(true)} theme={theme} transitionDur={transitionDur}>
               Contact
             </PillButton>

@@ -24,6 +24,8 @@ export const ARTICLES_QUERY = `
     publishedAt,
     excerpt,
     image,
+    tags,
+    readingTime,
   }
 `
 
@@ -36,5 +38,8 @@ export const ARTICLE_QUERY = `
     excerpt,
     content,
     image,
+    tags,
+    readingTime,
+    originalUrl,
   }
 `
