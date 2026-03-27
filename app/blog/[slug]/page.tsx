@@ -21,7 +21,7 @@ interface Article {
 
 const portableTextComponents = {
   block: {
-    h2: ({ children }: { children: React.ReactNode }) => (
+    h2: ({ children }: { children?: React.ReactNode }) => (
       <h2
         style={{
           fontSize: '28px',
@@ -34,7 +34,7 @@ const portableTextComponents = {
         {children}
       </h2>
     ),
-    h3: ({ children }: { children: React.ReactNode }) => (
+    h3: ({ children }: { children?: React.ReactNode }) => (
       <h3
         style={{
           fontSize: '22px',
@@ -47,7 +47,7 @@ const portableTextComponents = {
         {children}
       </h3>
     ),
-    blockquote: ({ children }: { children: React.ReactNode }) => (
+    blockquote: ({ children }: { children?: React.ReactNode }) => (
       <blockquote
         style={{
           margin: '32px 0',
@@ -64,7 +64,7 @@ const portableTextComponents = {
         {children}
       </blockquote>
     ),
-    normal: ({ children }: { children: React.ReactNode }) => (
+    normal: ({ children }: { children?: React.ReactNode }) => (
       <p
         style={{
           margin: '0 0 24px 0',
@@ -78,15 +78,15 @@ const portableTextComponents = {
     ),
   },
   marks: {
-    strong: ({ children }: { children: React.ReactNode }) => (
+    strong: ({ children }: { children?: React.ReactNode }) => (
       <strong style={{ fontWeight: '700', color: '#1b1b34' }}>{children}</strong>
     ),
-    em: ({ children }: { children: React.ReactNode }) => (
+    em: ({ children }: { children?: React.ReactNode }) => (
       <em style={{ fontStyle: 'italic' }}>{children}</em>
     ),
-    link: ({ children, value }: { children: React.ReactNode; value: { href: string } }) => (
+    link: ({ children, value }: { children?: React.ReactNode; value?: { href: string } }) => (
       <a
-        href={value.href}
+        href={value?.href}
         target="_blank"
         rel="noopener noreferrer"
         style={{
@@ -132,7 +132,7 @@ const portableTextComponents = {
     ),
   },
   list: {
-    bullet: ({ children }: { children: React.ReactNode }) => (
+    bullet: ({ children }: { children?: React.ReactNode }) => (
       <ul
         style={{
           margin: '24px 0',
@@ -145,7 +145,7 @@ const portableTextComponents = {
         {children}
       </ul>
     ),
-    number: ({ children }: { children: React.ReactNode }) => (
+    number: ({ children }: { children?: React.ReactNode }) => (
       <ol
         style={{
           margin: '24px 0',
@@ -160,10 +160,10 @@ const portableTextComponents = {
     ),
   },
   listItem: {
-    bullet: ({ children }: { children: React.ReactNode }) => (
+    bullet: ({ children }: { children?: React.ReactNode }) => (
       <li style={{ marginBottom: '8px' }}>{children}</li>
     ),
-    number: ({ children }: { children: React.ReactNode }) => (
+    number: ({ children }: { children?: React.ReactNode }) => (
       <li style={{ marginBottom: '8px' }}>{children}</li>
     ),
   },
