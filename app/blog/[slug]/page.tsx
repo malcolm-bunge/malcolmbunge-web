@@ -623,8 +623,8 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
 
         {/* ── Legal footer ── */}
         <div style={{ maxWidth: '720px', margin: '0 auto', padding: `${S.xl} ${S.lg}`, display: 'flex', gap: S.md, justifyContent: 'flex-end' }}>
-          <Link href="/impressum" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Impressum</Link>
-          <Link href="/datenschutz" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Datenschutz</Link>
+          <Link href="/impressum" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Legal Notice</Link>
+          <Link href="/datenschutz" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Privacy Policy</Link>
         </div>
       </article>
     </>

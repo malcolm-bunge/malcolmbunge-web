@@ -2,7 +2,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Impressum — Malcolm Bunge',
+  title: 'Legal Notice — Malcolm Bunge',
 }
 
 const S = {
@@ -25,7 +25,7 @@ export default function Impressum() {
             </h1>
           </Link>
           <Link href="/" style={{ fontFamily: S.jakarta, fontSize: '14px', fontWeight: 600, color: '#8a3abf', textDecoration: 'none' }}>
-            ← Zurück
+            ← Back
           </Link>
         </div>
         <p style={{ fontFamily: S.poppins, fontWeight: 600, fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: '#8a3abf', margin: '0 0 48px' }}>
@@ -37,41 +37,41 @@ export default function Impressum() {
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: '0 32px 80px' }}>
 
         <h2 style={{ fontFamily: S.fraunces, fontWeight: 700, fontSize: '36px', color: '#1b1b34', margin: '0 0 32px' }}>
-          Impressum
+          Legal Notice
         </h2>
 
-        {/* Angaben */}
+        {/* Provider details */}
         <section style={{ marginBottom: '40px' }}>
           <h3 style={{ fontFamily: S.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
-            Angaben gemäß § 5 DDG
+            Information pursuant to § 5 DDG
           </h3>
           <p style={{ fontSize: '16px', lineHeight: '1.75', margin: 0, color: '#2a2a51' }}>
             Malcolm Bunge<br />
             Parkstr. 16<br />
             13086 Berlin<br />
-            Deutschland
+            Germany
           </p>
         </section>
 
         <div style={{ borderTop: '1px solid rgba(27,27,52,0.12)', margin: '0 0 40px' }} />
 
-        {/* Kontakt */}
+        {/* Contact */}
         <section style={{ marginBottom: '40px' }}>
           <h3 style={{ fontFamily: S.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
-            Kontakt
+            Contact
           </h3>
           <p style={{ fontSize: '16px', lineHeight: '1.75', margin: 0, color: '#2a2a51' }}>
-            Telefon: <a href="tel:+4917662171654">+49 176 62171654</a><br />
-            E-Mail: <a href="mailto:hello@malcolmbunge.com">hello@malcolmbunge.com</a>
+            Phone: <a href="tel:+4917662171654">+49 176 62171654</a><br />
+            Email: <a href="mailto:hello@malcolmbunge.com">hello@malcolmbunge.com</a>
           </p>
         </section>
 
         <div style={{ borderTop: '1px solid rgba(27,27,52,0.12)', margin: '0 0 40px' }} />
 
-        {/* Verantwortlich */}
+        {/* Editorial responsibility */}
         <section style={{ marginBottom: '40px' }}>
           <h3 style={{ fontFamily: S.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
-            Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV
+            Editorially responsible pursuant to § 18 para. 2 MStV
           </h3>
           <p style={{ fontSize: '16px', lineHeight: '1.75', margin: 0, color: '#2a2a51' }}>
             Malcolm Bunge<br />
@@ -82,48 +82,48 @@ export default function Impressum() {
 
         <div style={{ borderTop: '1px solid rgba(27,27,52,0.12)', margin: '0 0 40px' }} />
 
-        {/* Haftungsausschluss */}
+        {/* Liability for content */}
         <section style={{ marginBottom: '40px' }}>
           <h3 style={{ fontFamily: S.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
-            Haftung für Inhalte
+            Liability for content
           </h3>
           <p style={{ fontSize: '16px', lineHeight: '1.75', margin: 0, color: '#2a2a51' }}>
-            Als Diensteanbieter bin ich gemäß § 7 Abs. 1 DDG für eigene Inhalte auf diesen Seiten nach den allgemeinen
-            Gesetzen verantwortlich. Nach §§ 8 bis 10 DDG bin ich als Diensteanbieter jedoch nicht verpflichtet,
-            übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf
-            eine rechtswidrige Tätigkeit hinweisen.
+            As a service provider I am responsible for my own content on these pages in accordance with
+            § 7 para. 1 DDG and general law. Under §§ 8 to 10 DDG, however, I am not obliged as a
+            service provider to monitor transmitted or stored third-party information or to investigate
+            circumstances that indicate illegal activity.
           </p>
         </section>
 
         <section style={{ marginBottom: '40px' }}>
           <h3 style={{ fontFamily: S.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
-            Haftung für Links
+            Liability for links
           </h3>
           <p style={{ fontSize: '16px', lineHeight: '1.75', margin: 0, color: '#2a2a51' }}>
-            Mein Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte ich keinen Einfluss habe.
-            Deshalb kann ich für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten
-            Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Zum Zeitpunkt der
-            Verlinkung waren keine Rechtsverstöße erkennbar. Bei Bekanntwerden von Rechtsverletzungen werde ich
-            derartige Links umgehend entfernen.
+            My website contains links to external third-party websites over whose content I have no
+            influence. I therefore cannot accept any liability for this third-party content. The
+            respective provider or operator of the linked pages is always responsible for their content.
+            No legal infringements were apparent at the time of linking. Should any legal violations
+            become known, I will remove the relevant links immediately.
           </p>
         </section>
 
         <section style={{ marginBottom: '40px' }}>
           <h3 style={{ fontFamily: S.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
-            Urheberrecht
+            Copyright
           </h3>
           <p style={{ fontSize: '16px', lineHeight: '1.75', margin: 0, color: '#2a2a51' }}>
-            Die durch den Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen
-            Urheberrecht. Beiträge Dritter sind als solche gekennzeichnet. Die Vervielfältigung, Bearbeitung,
-            Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der
-            schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.
+            The content and works created by the site operator on these pages are subject to German
+            copyright law. Contributions from third parties are marked as such. Reproduction, editing,
+            distribution and any form of use beyond the limits of copyright law require the written
+            consent of the respective author or creator.
           </p>
         </section>
 
         {/* Footer links */}
         <div style={{ borderTop: '1px solid rgba(27,27,52,0.12)', paddingTop: '32px', display: 'flex', gap: '24px', fontSize: '14px' }}>
-          <Link href="/" style={{ color: '#8a3abf', textDecoration: 'none', fontWeight: 600 }}>← Startseite</Link>
-          <Link href="/datenschutz" style={{ color: '#8a3abf', textDecoration: 'none', fontWeight: 600 }}>Datenschutzerklärung</Link>
+          <Link href="/" style={{ color: '#8a3abf', textDecoration: 'none', fontWeight: 600 }}>← Home</Link>
+          <Link href="/datenschutz" style={{ color: '#8a3abf', textDecoration: 'none', fontWeight: 600 }}>Privacy Policy</Link>
         </div>
 
       </div>

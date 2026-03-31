@@ -584,8 +584,8 @@ export default function BlogPage() {
         className="content-wrapper"
         style={{ maxWidth: '1512px', margin: '0 auto', padding: `0 ${S.lg} ${S.xl}`, display: 'flex', gap: S.md, justifyContent: 'flex-end' }}
       >
-        <Link href="/impressum" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Impressum</Link>
-        <Link href="/datenschutz" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Datenschutz</Link>
+        <Link href="/impressum" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Legal Notice</Link>
+        <Link href="/datenschutz" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Privacy Policy</Link>
       </div>
 
       <ContactModal isOpen={contactOpen} onClose={() => setContactOpen(false)} theme={theme} transitionDur={transitionDur} />
