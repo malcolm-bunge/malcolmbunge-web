@@ -35,6 +35,7 @@ interface Article {
   tags?: string[]
   readingTime?: number
   originalUrl?: string
+  author?: string
 }
 
 // ── Icons ──────────────────────────────────────────────────────────────────────
@@ -380,6 +381,20 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
             </Link>
             <PillButton onClick={() => setContactOpen(true)} theme={theme} transitionDur={transitionDur}>Contact</PillButton>
           </div>
+
+          {/* Name + tagline */}
+          <h1 className="main-name" style={{
+            fontFamily: F.fraunces, fontWeight: 700, fontSize: '64px', lineHeight: '64px', letterSpacing: '0.64px',
+            color: theme.textBody, margin: '0 0 2px', textTransform: 'lowercase', transition: transition(transitionDur),
+          }}>
+            malcolm bunge
+          </h1>
+          <p style={{
+            fontFamily: F.poppins, fontWeight: 600, fontSize: '14px', lineHeight: '19px', letterSpacing: '0.98px',
+            textTransform: 'uppercase', color: theme.accent, margin: '0 0 48px', transition: transition(transitionDur),
+          }}>
+            Writing
+          </p>
         </div>
 
         {content}
@@ -436,6 +451,11 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
             {article.readingTime && (
               <span style={{ fontFamily: F.jakarta, fontSize: '14px', color: theme.textMuted, transition: transition(transitionDur) }}>
                 · {article.readingTime} min read
+              </span>
+            )}
+            {article.author && (
+              <span style={{ fontFamily: F.jakarta, fontSize: '14px', color: theme.textMuted, transition: transition(transitionDur) }}>
+                · By {article.author}
               </span>
             )}
           </div>

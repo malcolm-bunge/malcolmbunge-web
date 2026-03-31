@@ -26,6 +26,7 @@ export const ARTICLES_QUERY = `
     image,
     tags,
     readingTime,
+    author,
   }
 `
 
@@ -41,5 +42,6 @@ export const ARTICLE_QUERY = `
     tags,
     readingTime,
     originalUrl,
+    author,
   }
 `

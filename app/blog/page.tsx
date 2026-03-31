@@ -38,6 +38,7 @@ interface Article {
   image?: any
   tags?: string[]
   readingTime?: number
+  author?: string
 }
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
