@@ -6,6 +6,7 @@ import { PortableText } from '@portabletext/react'
 import { sanityFetch } from '@/sanity/client'
 import { ARTICLE_QUERY, ARTICLES_QUERY } from '@/sanity/queries'
 import { urlFor } from '@/src/sanity/lib/image'
+import { getThemeForHour } from '../../timeThemes'
 
 interface Article {
   _id: string
@@ -278,26 +279,55 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
       </nav>
 
       {/* Hero / Featured Image */}
-      {article.image && (
-        <div
-          style={{
-            width: '100%',
-            height: '400px',
-            background: '#f6f7f9',
-            overflow: 'hidden',
-          }}
-        >
-          <img
-            src={urlFor(article.image).width(1200).height(400).fit('crop').url()}
-            alt={article.title}
+      {article.image && (() => {
+        const hour = new Date().getHours() + new Date().getMinutes() / 60
+        const theme = getThemeForHour(hour)
+        return (
+          <div
             style={{
               width: '100%',
-              height: '100%',
-              objectFit: 'cover',
+              height: '400px',
+              overflow: 'hidden',
+              position: 'relative',
             }}
-          />
-        </div>
-      )}
+          >
+            <style>{`
+              @keyframes heroZoomPan {
+                0% { transform: scale(1.05) translate(0%, 0%); }
+                50% { transform: scale(1.12) translate(-1.5%, -1%); }
+                100% { transform: scale(1.05) translate(0%, 0%); }
+              }
+            `}</style>
+            <img
+              src={urlFor(article.image).width(1400).height(600).fit('crop').url()}
+              alt={article.title}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                filter: 'grayscale(100%)',
+                animation: 'heroZoomPan 20s ease-in-out infinite',
+                willChange: 'transform',
+              }}
+            />
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: `linear-gradient(135deg, ${theme.bgColor}cc 0%, ${theme.blob1}66 50%, ${theme.blob2}44 100%)`,
+                mixBlendMode: 'multiply',
+              }}
+            />
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: `linear-gradient(to top, ${theme.bgColor} 0%, transparent 40%)`,
+              }}
+            />
+          </div>
+        )
+      })()}
 
       {/* Article Content */}
       <article
