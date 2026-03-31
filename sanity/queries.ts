@@ -48,9 +48,9 @@ export const ARTICLE_QUERY = `
 
 export const ARTICLE_NAV_QUERY = `{
   "prev": *[_type == "article" && publishedAt < $publishedAt] | order(publishedAt desc) [0] {
-    _id, title, slug
+    _id, title, slug, image
   },
   "next": *[_type == "article" && publishedAt > $publishedAt] | order(publishedAt asc) [0] {
-    _id, title, slug
+    _id, title, slug, image
   }
 }`

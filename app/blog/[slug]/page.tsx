@@ -195,8 +195,8 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
   const [article, setArticle] = useState<Article | null>(null)
   const [loading, setLoading] = useState(true)
   const [slug, setSlug] = useState('')
-  const [prevArticle, setPrevArticle] = useState<{ _id: string; title: string; slug: { current: string } } | null>(null)
-  const [nextArticle, setNextArticle] = useState<{ _id: string; title: string; slug: { current: string } } | null>(null)
+  const [prevArticle, setPrevArticle] = useState<{ _id: string; title: string; slug: { current: string }; image?: any } | null>(null)
+  const [nextArticle, setNextArticle] = useState<{ _id: string; title: string; slug: { current: string }; image?: any } | null>(null)
   const [virtualMinutes, setVirtualMinutes] = useState(() => {
     const now = new Date()
     return now.getHours() * 60 + now.getMinutes()
@@ -558,8 +558,8 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
             )
           })()}
 
-          {/* Back + Substack (swapped) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: S.md, flexWrap: 'wrap' }}>
+          {/* Back + Substack — back left, substack right */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: S.md, flexWrap: 'wrap' }}>
             <Link href="/blog" style={{ color: theme.accent, textDecoration: 'none', fontFamily: F.jakarta, fontWeight: 600, fontSize: '14px', transition: transition(transitionDur) }}>
               ← Back to all articles
             </Link>
@@ -581,27 +581,37 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
           {/* Prev / Next navigation */}
           {(prevArticle || nextArticle) && (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: S.md, paddingTop: S.lg, borderTop: `1px solid ${theme.divider}`, transition: transition(transitionDur) }}>
-              {/* Previous (older) */}
+              {/* Previous (older) — left */}
               <div>
                 {prevArticle ? (
-                  <Link href={`/blog/${prevArticle.slug.current}`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <Link href={`/blog/${prevArticle.slug.current}`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <span style={{ fontFamily: F.jakarta, fontWeight: 600, fontSize: '11px', letterSpacing: '0.8px', textTransform: 'uppercase', color: theme.textMuted, transition: transition(transitionDur) }}>
                       ← Previous
                     </span>
+                    {prevArticle.image && (
+                      <div style={{ width: '100%', height: '120px', borderRadius: '10px', overflow: 'hidden' }}>
+                        <img src={urlFor(prevArticle.image).width(400).height(240).fit('crop').url()} alt={prevArticle.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                    )}
                     <span style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '16px', lineHeight: '1.3', color: theme.accent, transition: transition(transitionDur) }}>
                       {prevArticle.title}
                     </span>
                   </Link>
                 ) : <div />}
               </div>
-              {/* Next (newer) */}
-              <div style={{ textAlign: 'right' }}>
+              {/* Next (newer) — right */}
+              <div>
                 {nextArticle ? (
-                  <Link href={`/blog/${nextArticle.slug.current}`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'flex-end' }}>
+                  <Link href={`/blog/${nextArticle.slug.current}`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'flex-end' }}>
                     <span style={{ fontFamily: F.jakarta, fontWeight: 600, fontSize: '11px', letterSpacing: '0.8px', textTransform: 'uppercase', color: theme.textMuted, transition: transition(transitionDur) }}>
                       Next →
                     </span>
-                    <span style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '16px', lineHeight: '1.3', color: theme.accent, transition: transition(transitionDur) }}>
+                    {nextArticle.image && (
+                      <div style={{ width: '100%', height: '120px', borderRadius: '10px', overflow: 'hidden' }}>
+                        <img src={urlFor(nextArticle.image).width(400).height(240).fit('crop').url()} alt={nextArticle.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                    )}
+                    <span style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '16px', lineHeight: '1.3', color: theme.accent, textAlign: 'right', transition: transition(transitionDur) }}>
                       {nextArticle.title}
                     </span>
                   </Link>
