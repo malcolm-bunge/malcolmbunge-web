@@ -457,13 +457,15 @@ export default function BlogPage() {
             </PillButton>
           </div>
 
-          {/* Name + tagline */}
-          <h1
-            className="main-name"
-            style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '64px', lineHeight: '64px', letterSpacing: '0.64px', color: theme.textBody, margin: '0 0 2px', textTransform: 'lowercase', transition: transition(transitionDur) }}
-          >
-            malcolm bunge
-          </h1>
+          {/* Name + tagline — logo links home */}
+          <Link href="/" style={{ textDecoration: 'none' }}>
+            <h1
+              className="main-name"
+              style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '64px', lineHeight: '64px', letterSpacing: '0.64px', color: theme.textBody, margin: '0 0 2px', textTransform: 'lowercase', transition: transition(transitionDur) }}
+            >
+              malcolm bunge
+            </h1>
+          </Link>
           <p
             style={{ fontFamily: F.poppins, fontWeight: 600, fontSize: '14px', lineHeight: '19px', letterSpacing: '0.98px', textTransform: 'uppercase', color: theme.accent, margin: 0, transition: transition(transitionDur) }}
           >

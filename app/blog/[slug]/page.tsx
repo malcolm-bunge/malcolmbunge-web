@@ -384,38 +384,21 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
             <PillButton onClick={() => setContactOpen(true)} theme={theme} transitionDur={transitionDur}>Contact</PillButton>
           </div>
 
-          {/* Name + tagline */}
-          <h1 className="main-name" style={{
-            fontFamily: F.fraunces, fontWeight: 700, fontSize: '64px', lineHeight: '64px', letterSpacing: '0.64px',
-            color: theme.textBody, margin: '0 0 2px', textTransform: 'lowercase', transition: transition(transitionDur),
-          }}>
-            malcolm bunge
-          </h1>
+          {/* Name + tagline — logo links home */}
+          <Link href="/" style={{ textDecoration: 'none' }}>
+            <h1 className="main-name" style={{
+              fontFamily: F.fraunces, fontWeight: 700, fontSize: '64px', lineHeight: '64px', letterSpacing: '0.64px',
+              color: theme.textBody, margin: '0 0 2px', textTransform: 'lowercase', transition: transition(transitionDur),
+            }}>
+              malcolm bunge
+            </h1>
+          </Link>
           <p style={{
             fontFamily: F.poppins, fontWeight: 600, fontSize: '14px', lineHeight: '19px', letterSpacing: '0.98px',
-            textTransform: 'uppercase', color: theme.accent, margin: '0 0 8px', transition: transition(transitionDur),
+            textTransform: 'uppercase', color: theme.accent, margin: 0, transition: transition(transitionDur),
           }}>
             Design &amp; Build
           </p>
-
-          {/* Breadcrumb */}
-          <nav style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: F.jakarta, fontWeight: 500, fontSize: '14px', color: theme.textMuted, margin: '0 0 48px', transition: transition(transitionDur) }}>
-            <Link href="/" style={{ color: theme.textMuted, textDecoration: 'none', transition: `color ${transitionDur} ease` }}
-              onMouseEnter={e => (e.currentTarget.style.color = theme.accent)}
-              onMouseLeave={e => (e.currentTarget.style.color = theme.textMuted)}>
-              malcolm bunge
-            </Link>
-            <span style={{ opacity: 0.4 }}>/</span>
-            <Link href="/blog" style={{ color: theme.textMuted, textDecoration: 'none', transition: `color ${transitionDur} ease` }}
-              onMouseEnter={e => (e.currentTarget.style.color = theme.accent)}
-              onMouseLeave={e => (e.currentTarget.style.color = theme.textMuted)}>
-              writing
-            </Link>
-            <span className="breadcrumb-article" style={{ opacity: 0.4 }}>/</span>
-            <span className="breadcrumb-article" style={{ color: theme.textBody, transition: `color ${transitionDur} ease`, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {article?.title ?? '…'}
-            </span>
-          </nav>
         </div>
 
         {content}
@@ -455,6 +438,25 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
 
       {/* Article */}
       <article style={{ maxWidth: '720px', margin: '0 auto', padding: `${S.xxl} ${S.lg} ${S.xxl}` }}>
+
+        {/* Breadcrumb — below hero, above title */}
+        <nav style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: F.jakarta, fontWeight: 500, fontSize: '14px', color: theme.textMuted, marginBottom: S.lg, transition: transition(transitionDur) }}>
+          <Link href="/" style={{ color: theme.textMuted, textDecoration: 'none', transition: `color ${transitionDur} ease` }}
+            onMouseEnter={e => (e.currentTarget.style.color = theme.accent)}
+            onMouseLeave={e => (e.currentTarget.style.color = theme.textMuted)}>
+            malcolm bunge
+          </Link>
+          <span style={{ opacity: 0.4 }}>/</span>
+          <Link href="/blog" style={{ color: theme.textMuted, textDecoration: 'none', transition: `color ${transitionDur} ease` }}
+            onMouseEnter={e => (e.currentTarget.style.color = theme.accent)}
+            onMouseLeave={e => (e.currentTarget.style.color = theme.textMuted)}>
+            writing
+          </Link>
+          <span className="breadcrumb-article" style={{ opacity: 0.4 }}>/</span>
+          <span className="breadcrumb-article" style={{ color: theme.textBody, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', transition: `color ${transitionDur} ease` }}>
+            {article.title}
+          </span>
+        </nav>
 
         {/* Header */}
         <header style={{ marginBottom: S.xl }}>
@@ -505,23 +507,63 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
         </div>
 
         {/* Footer */}
-        <footer style={{ paddingTop: S.lg, borderTop: `1px solid ${theme.divider}`, display: 'flex', flexDirection: 'column', gap: S.md, transition: transition(transitionDur) }}>
-          {article.originalUrl && (
-            <a href={article.originalUrl} target="_blank" rel="noopener noreferrer" className="pressable"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '8px', alignSelf: 'flex-start',
-                padding: '10px 20px', background: theme.glassPanel, color: theme.accent,
-                border: `1px solid ${theme.glassBorder}`, borderRadius: '999px',
-                fontFamily: F.jakarta, fontWeight: 600, fontSize: '14px',
-                textDecoration: 'none', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
-                transition: `${transition(transitionDur)}, transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)`,
-              }}>
-              Read on Substack →
-            </a>
-          )}
-          <Link href="/blog" style={{ color: theme.accent, textDecoration: 'none', fontFamily: F.jakarta, fontWeight: 600, fontSize: '14px', transition: transition(transitionDur) }}>
-            ← Back to all articles
-          </Link>
+        <footer style={{ paddingTop: S.lg, borderTop: `1px solid ${theme.divider}`, display: 'flex', flexDirection: 'column', gap: S.lg, transition: transition(transitionDur) }}>
+
+          {/* Share */}
+          {(() => {
+            const url = `https://malcolmbunge.com/blog/${article.slug.current}`
+            const text = encodeURIComponent(article.title)
+            const enc = encodeURIComponent(url)
+            const shareLinks = [
+              { label: 'LinkedIn',  href: `https://www.linkedin.com/sharing/share-offsite/?url=${enc}` },
+              { label: 'Facebook',  href: `https://www.facebook.com/sharer/sharer.php?u=${enc}` },
+              { label: 'Threads',   href: `https://www.threads.net/intent/post?text=${text}%20${enc}` },
+              { label: 'Bluesky',   href: `https://bsky.app/intent/compose?text=${text}%20${enc}` },
+              { label: 'E-Mail',    href: `mailto:?subject=${text}&body=${enc}` },
+            ]
+            return (
+              <div>
+                <p style={{ fontFamily: F.jakarta, fontWeight: 600, fontSize: '13px', letterSpacing: '0.8px', textTransform: 'uppercase', color: theme.textMuted, margin: '0 0 12px', transition: transition(transitionDur) }}>
+                  Share this article
+                </p>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {shareLinks.map(({ label, href }) => (
+                    <a key={label} href={href} target="_blank" rel="noopener noreferrer" className="pressable"
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '6px',
+                        padding: '6px 16px', background: theme.glassPanel, color: theme.accent,
+                        border: `1px solid ${theme.glassBorder}`, borderRadius: '999px',
+                        fontFamily: F.jakarta, fontWeight: 600, fontSize: '13px',
+                        textDecoration: 'none', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+                        transition: `${transition(transitionDur)}, transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)`,
+                      }}>
+                      {label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )
+          })()}
+
+          {/* Substack + back */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: S.md, flexWrap: 'wrap' }}>
+            {article.originalUrl && (
+              <a href={article.originalUrl} target="_blank" rel="noopener noreferrer" className="pressable"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '8px',
+                  padding: '10px 20px', background: theme.glassPanel, color: theme.accent,
+                  border: `1px solid ${theme.glassBorder}`, borderRadius: '999px',
+                  fontFamily: F.jakarta, fontWeight: 600, fontSize: '14px',
+                  textDecoration: 'none', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+                  transition: `${transition(transitionDur)}, transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)`,
+                }}>
+                Read on Substack →
+              </a>
+            )}
+            <Link href="/blog" style={{ color: theme.accent, textDecoration: 'none', fontFamily: F.jakarta, fontWeight: 600, fontSize: '14px', transition: transition(transitionDur) }}>
+              ← Back to all articles
+            </Link>
+          </div>
         </footer>
       </article>
     </>
