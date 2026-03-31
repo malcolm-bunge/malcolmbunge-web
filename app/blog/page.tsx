@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { sanityFetch } from '@/sanity/client'
 import { ARTICLES_QUERY } from '@/sanity/queries'
+import { urlFor } from '@/src/sanity/lib/image'
 
 interface Article {
   _id: string
@@ -190,7 +191,7 @@ export default function BlogPage() {
                       }}
                     >
                       <img
-                        src={article.image.asset.url}
+                        src={urlFor(article.image).width(400).height(400).fit('crop').url()}
                         alt={article.title}
                         style={{
                           width: '100%',

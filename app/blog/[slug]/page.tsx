@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { PortableText } from '@portabletext/react'
 import { sanityFetch } from '@/sanity/client'
 import { ARTICLE_QUERY, ARTICLES_QUERY } from '@/sanity/queries'
+import { urlFor } from '@/src/sanity/lib/image'
 
 interface Article {
   _id: string
@@ -103,12 +104,12 @@ const portableTextComponents = {
     image: ({
       value,
     }: {
-      value: { asset: { url: string }; alt: string; caption?: string }
+      value: { asset: { _ref: string }; alt?: string; caption?: string }
     }) => (
       <figure style={{ margin: '48px 0' }}>
         <img
-          src={value.asset.url}
-          alt={value.alt}
+          src={urlFor(value).width(960).url()}
+          alt={value.alt || ''}
           style={{
             width: '100%',
             height: 'auto',
@@ -287,7 +288,7 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
           }}
         >
           <img
-            src={article.image.asset.url}
+            src={urlFor(article.image).width(1200).height(400).fit('crop').url()}
             alt={article.title}
             style={{
               width: '100%',
