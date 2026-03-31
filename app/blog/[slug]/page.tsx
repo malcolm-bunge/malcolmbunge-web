@@ -361,7 +361,9 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
           100% { transform: scale(1.05) translate(0%, 0%); }
         }
         @media (max-width: 1023px) {
-          .nav-bar { justify-content: flex-end !important; }
+          .main-name { font-size: 48px !important; line-height: 52px !important; }
+          .nav-intro  { display: none !important; }
+          .nav-bar    { justify-content: flex-end !important; }
           .article-title { font-size: 36px !important; }
           .breadcrumb-article { display: none !important; }
         }

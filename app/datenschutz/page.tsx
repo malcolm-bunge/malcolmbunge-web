@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'Privacy Policy — Malcolm Bunge',
 }
 
-const S = {
+const F = {
   fraunces: "'Fraunces', serif",
   jakarta:  "'Plus Jakarta Sans', sans-serif",
   poppins:  "'Poppins', sans-serif",
@@ -13,36 +13,61 @@ const S = {
 
 export default function Datenschutz() {
   return (
-    <div style={{ backgroundColor: '#f4f1ec', minHeight: '100dvh', fontFamily: S.jakarta, color: '#1b1b34' }}>
-      <style>{`* { box-sizing: border-box; } a { color: #8a3abf; } a:hover { opacity: 0.75; }`}</style>
+    <div style={{ backgroundColor: '#f4f1ec', minHeight: '100dvh', fontFamily: F.jakarta, color: '#1b1b34' }}>
+      <style>{`
+        * { box-sizing: border-box; }
+        a { color: #8a3abf; }
+        a:hover { opacity: 0.75; }
+        @media (max-width: 1023px) {
+          .main-name { font-size: 48px !important; line-height: 52px !important; }
+          .nav-intro  { display: none !important; }
+          .nav-bar    { justify-content: flex-end !important; }
+        }
+      `}</style>
 
-      {/* Nav */}
-      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '48px 32px 0' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '4px' }}>
-          <Link href="/" style={{ textDecoration: 'none' }}>
-            <h1 style={{ fontFamily: S.fraunces, fontWeight: 700, fontSize: '40px', lineHeight: 1, color: '#1b1b34', margin: 0, textTransform: 'lowercase' }}>
-              malcolm bunge
-            </h1>
-          </Link>
-          <Link href="/" style={{ fontFamily: S.jakarta, fontSize: '14px', fontWeight: 600, color: '#8a3abf', textDecoration: 'none' }}>
-            ← Back
+      {/* ── Nav — matches site-wide structure ── */}
+      <div style={{ maxWidth: '1512px', margin: '0 auto', padding: '64px 32px 0' }}>
+        <div className="nav-bar" style={{ display: 'flex', alignItems: 'flex-end', gap: '10px', marginBottom: '8px' }}>
+          <p className="nav-intro" style={{ flex: 1, fontFamily: F.jakarta, fontWeight: 500, fontSize: '14px', color: '#8585c1', margin: 0 }}>
+            malcolmbunge.com // Privacy Policy
+          </p>
+          <Link href="/" style={{
+            backgroundColor: 'rgba(27,27,52,0.06)', color: '#8a3abf',
+            border: '1px solid rgba(27,27,52,0.15)',
+            padding: '4px 16px', borderRadius: '999px',
+            display: 'inline-flex', alignItems: 'center', gap: '8px',
+            fontFamily: F.jakarta, fontWeight: 500, fontSize: '16px', lineHeight: '24px',
+            textDecoration: 'none', whiteSpace: 'nowrap',
+          }}>
+            ← Home
           </Link>
         </div>
-        <p style={{ fontFamily: S.poppins, fontWeight: 600, fontSize: '12px', letterSpacing: '1px', textTransform: 'uppercase', color: '#8a3abf', margin: '0 0 48px' }}>
+
+        <Link href="/" style={{ textDecoration: 'none' }}>
+          <h1 className="main-name" style={{
+            fontFamily: F.fraunces, fontWeight: 700, fontSize: '64px', lineHeight: '64px',
+            letterSpacing: '0.64px', color: '#1b1b34', margin: '0 0 2px', textTransform: 'lowercase',
+          }}>
+            malcolm bunge
+          </h1>
+        </Link>
+        <p style={{
+          fontFamily: F.poppins, fontWeight: 600, fontSize: '14px', lineHeight: '19px',
+          letterSpacing: '0.98px', textTransform: 'uppercase', color: '#8a3abf', margin: 0,
+        }}>
           Design &amp; Build
         </p>
       </div>
 
-      {/* Content */}
-      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '0 32px 80px' }}>
+      {/* ── Content — reading width ── */}
+      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '64px 32px 80px' }}>
 
-        <h2 style={{ fontFamily: S.fraunces, fontWeight: 700, fontSize: '36px', color: '#1b1b34', margin: '0 0 32px' }}>
+        <h2 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '36px', color: '#1b1b34', margin: '0 0 32px' }}>
           Privacy Policy
         </h2>
 
-        {/* 1. Controller */}
         <section style={{ marginBottom: '40px' }}>
-          <h3 style={{ fontFamily: S.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
+          <h3 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
             1. Controller
           </h3>
           <p style={{ fontSize: '16px', lineHeight: '1.75', margin: 0, color: '#2a2a51' }}>
@@ -56,9 +81,8 @@ export default function Datenschutz() {
 
         <div style={{ borderTop: '1px solid rgba(27,27,52,0.12)', margin: '0 0 40px' }} />
 
-        {/* 2. Hosting */}
         <section style={{ marginBottom: '40px' }}>
-          <h3 style={{ fontFamily: S.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
+          <h3 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
             2. Hosting
           </h3>
           <p style={{ fontSize: '16px', lineHeight: '1.75', margin: '0 0 16px', color: '#2a2a51' }}>
@@ -91,9 +115,8 @@ export default function Datenschutz() {
 
         <div style={{ borderTop: '1px solid rgba(27,27,52,0.12)', margin: '0 0 40px' }} />
 
-        {/* 3. Google Fonts */}
         <section style={{ marginBottom: '40px' }}>
-          <h3 style={{ fontFamily: S.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
+          <h3 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
             3. Google Fonts
           </h3>
           <p style={{ fontSize: '16px', lineHeight: '1.75', margin: '0 0 16px', color: '#2a2a51' }}>
@@ -117,9 +140,8 @@ export default function Datenschutz() {
 
         <div style={{ borderTop: '1px solid rgba(27,27,52,0.12)', margin: '0 0 40px' }} />
 
-        {/* 4. Sanity CMS */}
         <section style={{ marginBottom: '40px' }}>
-          <h3 style={{ fontFamily: S.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
+          <h3 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
             4. Content via Sanity CMS
           </h3>
           <p style={{ fontSize: '16px', lineHeight: '1.75', margin: 0, color: '#2a2a51' }}>
@@ -135,9 +157,8 @@ export default function Datenschutz() {
 
         <div style={{ borderTop: '1px solid rgba(27,27,52,0.12)', margin: '0 0 40px' }} />
 
-        {/* 5. No cookies */}
         <section style={{ marginBottom: '40px' }}>
-          <h3 style={{ fontFamily: S.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
+          <h3 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
             5. Cookies and tracking
           </h3>
           <p style={{ fontSize: '16px', lineHeight: '1.75', margin: 0, color: '#2a2a51' }}>
@@ -148,9 +169,8 @@ export default function Datenschutz() {
 
         <div style={{ borderTop: '1px solid rgba(27,27,52,0.12)', margin: '0 0 40px' }} />
 
-        {/* 6. Contact by email */}
         <section style={{ marginBottom: '40px' }}>
-          <h3 style={{ fontFamily: S.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
+          <h3 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
             6. Contact by email
           </h3>
           <p style={{ fontSize: '16px', lineHeight: '1.75', margin: 0, color: '#2a2a51' }}>
@@ -163,9 +183,8 @@ export default function Datenschutz() {
 
         <div style={{ borderTop: '1px solid rgba(27,27,52,0.12)', margin: '0 0 40px' }} />
 
-        {/* 7. Your rights */}
         <section style={{ marginBottom: '40px' }}>
-          <h3 style={{ fontFamily: S.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
+          <h3 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
             7. Your rights as a data subject
           </h3>
           <p style={{ fontSize: '16px', lineHeight: '1.75', margin: '0 0 16px', color: '#2a2a51' }}>
@@ -187,9 +206,8 @@ export default function Datenschutz() {
 
         <div style={{ borderTop: '1px solid rgba(27,27,52,0.12)', margin: '0 0 40px' }} />
 
-        {/* 8. Right to lodge a complaint */}
         <section style={{ marginBottom: '40px' }}>
-          <h3 style={{ fontFamily: S.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
+          <h3 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
             8. Right to lodge a complaint
           </h3>
           <p style={{ fontSize: '16px', lineHeight: '1.75', margin: 0, color: '#2a2a51' }}>
@@ -206,7 +224,6 @@ export default function Datenschutz() {
           </p>
         </section>
 
-        {/* Footer links */}
         <div style={{ borderTop: '1px solid rgba(27,27,52,0.12)', paddingTop: '32px', display: 'flex', gap: '24px', fontSize: '14px' }}>
           <Link href="/" style={{ color: '#8a3abf', textDecoration: 'none', fontWeight: 600 }}>← Home</Link>
           <Link href="/impressum" style={{ color: '#8a3abf', textDecoration: 'none', fontWeight: 600 }}>Legal Notice</Link>
