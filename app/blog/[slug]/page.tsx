@@ -372,23 +372,9 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
         {/* Nav */}
         <div style={{ maxWidth: '1512px', margin: '0 auto', padding: `${S.xxl} ${S.lg} 0` }}>
           <div className="nav-bar" style={{ display: 'flex', alignItems: 'flex-end', gap: '10px', marginBottom: S.xs }}>
-            <nav className="nav-intro" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '6px', fontFamily: F.jakarta, fontWeight: 500, fontSize: '14px', color: theme.textMuted, margin: 0, transition: transition(transitionDur) }}>
-              <Link href="/" style={{ color: theme.textMuted, textDecoration: 'none', transition: `color ${transitionDur} ease` }}
-                onMouseEnter={e => (e.currentTarget.style.color = theme.accent)}
-                onMouseLeave={e => (e.currentTarget.style.color = theme.textMuted)}>
-                malcolm bunge
-              </Link>
-              <span style={{ opacity: 0.4 }}>/</span>
-              <Link href="/blog" style={{ color: theme.textMuted, textDecoration: 'none', transition: `color ${transitionDur} ease` }}
-                onMouseEnter={e => (e.currentTarget.style.color = theme.accent)}
-                onMouseLeave={e => (e.currentTarget.style.color = theme.textMuted)}>
-                writing
-              </Link>
-              <span className="breadcrumb-article" style={{ opacity: 0.4 }}>/</span>
-              <span className="breadcrumb-article" style={{ color: theme.textBody, transition: `color ${transitionDur} ease`, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {article?.title ?? '…'}
-              </span>
-            </nav>
+            <p className="nav-intro" style={{ flex: 1, fontFamily: F.jakarta, fontWeight: 500, fontSize: '14px', color: theme.textMuted, margin: 0, transition: transition(transitionDur) }}>
+              malcolmbunge_V1c_final_202603.com // Writing on AI, design, and the people in between.
+            </p>
             <TimeWidget virtualMinutes={virtualMinutes} setVirtualMinutes={setVirtualMinutes} isPlaying={isPlaying} setIsPlaying={setIsPlaying} theme={theme} transitionDur={transitionDur} />
             <PillButton onClick={() => setContactOpen(true)} theme={theme} transitionDur={transitionDur}>Contact</PillButton>
           </div>
@@ -402,10 +388,29 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
           </h1>
           <p style={{
             fontFamily: F.poppins, fontWeight: 600, fontSize: '14px', lineHeight: '19px', letterSpacing: '0.98px',
-            textTransform: 'uppercase', color: theme.accent, margin: '0 0 48px', transition: transition(transitionDur),
+            textTransform: 'uppercase', color: theme.accent, margin: '0 0 8px', transition: transition(transitionDur),
           }}>
-            Writing
+            Design &amp; Build
           </p>
+
+          {/* Breadcrumb */}
+          <nav style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: F.jakarta, fontWeight: 500, fontSize: '14px', color: theme.textMuted, margin: '0 0 48px', transition: transition(transitionDur) }}>
+            <Link href="/" style={{ color: theme.textMuted, textDecoration: 'none', transition: `color ${transitionDur} ease` }}
+              onMouseEnter={e => (e.currentTarget.style.color = theme.accent)}
+              onMouseLeave={e => (e.currentTarget.style.color = theme.textMuted)}>
+              malcolm bunge
+            </Link>
+            <span style={{ opacity: 0.4 }}>/</span>
+            <Link href="/blog" style={{ color: theme.textMuted, textDecoration: 'none', transition: `color ${transitionDur} ease` }}
+              onMouseEnter={e => (e.currentTarget.style.color = theme.accent)}
+              onMouseLeave={e => (e.currentTarget.style.color = theme.textMuted)}>
+              writing
+            </Link>
+            <span className="breadcrumb-article" style={{ opacity: 0.4 }}>/</span>
+            <span className="breadcrumb-article" style={{ color: theme.textBody, transition: `color ${transitionDur} ease`, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {article?.title ?? '…'}
+            </span>
+          </nav>
         </div>
 
         {content}

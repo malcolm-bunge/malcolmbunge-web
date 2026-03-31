@@ -4,7 +4,8 @@ import {useEffect, useRef, useState} from 'react'
 import Link from 'next/link'
 
 import {sanityFetch} from '@/sanity/client'
-import {SPRINT_STATUS_QUERY, RAW_LOG_QUERY} from '@/sanity/queries'
+import {ARTICLES_QUERY} from '@/sanity/queries'
+import {urlFor} from '@/src/sanity/lib/image'
 import {TimeTheme, getThemeForHour, formatVirtualTime, getBlobAnimationDuration} from './timeThemes'
 
 // ── Fonts ────────────────────────────────────────────────────────────────────
@@ -30,42 +31,25 @@ const META = {
   intro: 'malcolmbunge_V1c_final_202603.com // Currently building this portfolio with Claude. Everything you see is real-time work.',
 }
 
-const ENTRIES_PER_PAGE = 3
 // Fast-forward: 1 real ms = PLAY_SPEED virtual minutes
 const PLAY_SPEED = 1 // 60 virtual minutes per real second (1 tick/s = 1 min)
 
 // ── Types ────────────────────────────────────────────────────────────────────
-interface SprintStatus {
+interface Article {
   _id: string
-  sprintName: string
-  deadline: string
-  technicalStatus: string
-  strategicObjective: string
-}
-
-interface LogEntry {
-  _id: string
-  entryDate: string
-  content: string
+  title: string
+  slug: { current: string }
+  publishedAt: string
+  excerpt: string
+  image?: any
+  tags?: string[]
+  readingTime?: number
+  author?: string
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-const formatDateLong = (dateString: string): string => {
-  const date = new Date(dateString + 'T00:00:00')
-  return new Intl.DateTimeFormat('en-GB', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(date)
-}
-
-const formatDateShort = (dateString: string): string => {
-  const date = new Date(dateString + 'T00:00:00')
-  const d = String(date.getDate()).padStart(2, '0')
-  const m = String(date.getMonth() + 1).padStart(2, '0')
-  const y = date.getFullYear()
-  return `${d}.${m}.${y}`
-}
+const formatDate = (dateString: string): string =>
+  new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(dateString))
 
 const transition = (duration = '3s') =>
   `color ${duration} ease, background-color ${duration} ease, background ${duration} ease, border-color ${duration} ease, box-shadow ${duration} ease, opacity ${duration} ease`
@@ -122,17 +106,6 @@ function PillButton({
   )
 }
 
-// ── Arrow icons ───────────────────────────────────────────────────────────────
-const ArrowRight = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M5 12h14M13 6l6 6-6 6" />
-  </svg>
-)
-const ArrowLeft = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M19 12H5M11 18l-6-6 6-6" />
-  </svg>
-)
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
 const MailIcon = () => (
@@ -152,75 +125,6 @@ const SubstackIcon = () => (
   </svg>
 )
 
-// ── Card wrapper ──────────────────────────────────────────────────────────────
-function Card({
-  title,
-  children,
-  theme,
-  transitionDur,
-}: {
-  title: string
-  children: React.ReactNode
-  theme: TimeTheme
-  transitionDur: string
-}) {
-  return (
-    <div
-      className="card"
-      style={{
-        background: theme.glassPanel,
-        borderColor: theme.glassBorder,
-        boxShadow: theme.boxShadow,
-        transition: transition(transitionDur),
-      }}
-    >
-      <h2
-        style={{
-          fontFamily: F.fraunces,
-          fontWeight: 700,
-          fontSize: '24px',
-          lineHeight: '32px',
-          letterSpacing: '0.24px',
-          color: theme.accent,
-          margin: `0 0 ${S.md}`,
-          flexShrink: 0,
-          transition: transition(transitionDur),
-        }}
-      >
-        {title}
-      </h2>
-      <div className="card-body">{children}</div>
-    </div>
-  )
-}
-
-// ── Label ──────────────────────────────────────────────────────────────────────
-function Label({
-  children,
-  theme,
-  transitionDur,
-  muted = false,
-}: {
-  children: React.ReactNode
-  theme: TimeTheme
-  transitionDur: string
-  muted?: boolean
-}) {
-  return (
-    <span
-      style={{
-        fontFamily: F.jakarta,
-        fontWeight: 600,
-        fontSize: '14px',
-        lineHeight: '20px',
-        color: muted ? theme.textMuted : theme.accent,
-        transition: transition(transitionDur),
-      }}
-    >
-      {children}
-    </span>
-  )
-}
 
 // ── Time Widget ───────────────────────────────────────────────────────────────
 function TimeWidget({
@@ -636,34 +540,9 @@ function ContactModal({
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function Home() {
-  const [sprintStatus, setSprintStatus] = useState<SprintStatus | null>(null)
-  const [logEntries, setLogEntries] = useState<LogEntry[]>([])
+  const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
-  const [logPage, setLogPage] = useState(0)
-  const [logFading, setLogFading] = useState(false)
-  const [logContainerHeight, setLogContainerHeight] = useState<string | undefined>(undefined)
   const [contactOpen, setContactOpen] = useState(false)
-  const logEntriesRef = useRef<HTMLDivElement>(null)
-
-  const changePage = (next: number) => {
-    // Pin current height before content swaps
-    if (logEntriesRef.current) {
-      setLogContainerHeight(`${logEntriesRef.current.offsetHeight}px`)
-    }
-    setLogFading(true)
-    setTimeout(() => {
-      setLogPage(next)
-      setLogFading(false)
-      // Two rAFs: first lets React paint the new content, second lets the browser measure it
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          if (logEntriesRef.current) {
-            setLogContainerHeight(`${logEntriesRef.current.scrollHeight}px`)
-          }
-        })
-      })
-    }, 150)
-  }
 
   // ── Time state ─────────────────────────────────────────────────────────────
   const [virtualMinutes, setVirtualMinutes] = useState<number>(() => {
@@ -671,8 +550,6 @@ export default function Home() {
     return now.getHours() * 60 + now.getMinutes()
   })
   const [isPlaying, setIsPlaying] = useState(false)
-  const playRef = useRef(isPlaying)
-  playRef.current = isPlaying
 
   // Fast-forward ticker
   useEffect(() => {
@@ -698,28 +575,11 @@ export default function Home() {
   const transitionDur = isPlaying ? '0.2s' : '3s'
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const [sprint, logs] = await Promise.all([
-          sanityFetch<SprintStatus>({query: SPRINT_STATUS_QUERY}),
-          sanityFetch<LogEntry[]>({query: RAW_LOG_QUERY}),
-        ])
-        setSprintStatus(sprint)
-        setLogEntries(logs || [])
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchData()
+    sanityFetch<Article[]>({query: ARTICLES_QUERY})
+      .then((data) => setArticles(data || []))
+      .catch(console.error)
+      .finally(() => setLoading(false))
   }, [])
-
-  const totalPages = Math.ceil(logEntries.length / ENTRIES_PER_PAGE)
-  const pagedEntries = logEntries.slice(
-    logPage * ENTRIES_PER_PAGE,
-    (logPage + 1) * ENTRIES_PER_PAGE,
-  )
 
   return (
     <div
@@ -735,23 +595,21 @@ export default function Home() {
       <style>{`
         * { box-sizing: border-box; }
 
-        .card {
-          flex: 1 0 0;
-          min-width: 0;
-          display: flex;
-          flex-direction: column;
-          border-radius: 24px;
+        .article-card {
+          display: grid;
+          gap: 24px;
+          padding: 28px;
+          border-radius: 20px;
           backdrop-filter: blur(24px) saturate(160%);
           -webkit-backdrop-filter: blur(24px) saturate(160%);
           border: 1px solid transparent;
-          padding: 32px;
+          text-decoration: none;
+          transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
+          cursor: pointer;
+          will-change: transform;
         }
-        .card-body {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
+        .article-card:hover { transform: translateY(-3px); }
+        .article-card:active { transform: scale(0.99); }
 
         /* ── Animated background blurs ── */
         .blurs-container {
@@ -821,14 +679,12 @@ export default function Home() {
         .content-wrapper { position: relative; z-index: 1; }
 
         @media (max-width: 1023px) {
-          .two-col-wrapper { flex-direction: column !important; }
-          .card { flex: 0 0 auto; width: 100%; }
-          .card-body { flex: 0 0 auto; }
           .main-name { font-size: 48px !important; line-height: 52px !important; }
           .nav-intro { display: none !important; }
           .nav-bar { justify-content: flex-end !important; }
-          .pagination-row { flex-wrap: wrap !important; }
-          .pagination-row > button { flex: 1 1 auto; justify-content: center; }
+        }
+        @media (max-width: 639px) {
+          .article-image { display: none !important; }
         }
 
         /* ── Press & hover animations ── */
@@ -864,17 +720,6 @@ export default function Home() {
         @keyframes panelFadeIn {
           from { opacity: 0; transform: translateY(-6px) scale(0.98); }
           to   { opacity: 1; transform: translateY(0)    scale(1); }
-        }
-
-        /* ── Log entries fade ── */
-        .log-entries {
-          display: flex;
-          flex-direction: column;
-          gap: 28px;
-          transition: opacity 0.15s ease;
-        }
-        .log-entries.fading {
-          opacity: 0;
         }
 
         /* ── Contact card hover ── */
@@ -916,7 +761,7 @@ export default function Home() {
       <div
         className="content-wrapper"
         style={{
-          maxWidth: '1512px',
+          maxWidth: '720px',
           margin: '0 auto',
           padding: `${S.xxl} ${S.lg}`,
           display: 'flex',
@@ -954,11 +799,6 @@ export default function Home() {
               theme={theme}
               transitionDur={transitionDur}
             />
-            <Link href="/blog" style={{textDecoration: 'none'}}>
-              <PillButton theme={theme} transitionDur={transitionDur}>
-                Blog
-              </PillButton>
-            </Link>
             <PillButton onClick={() => setContactOpen(true)} theme={theme} transitionDur={transitionDur}>
               Contact
             </PillButton>
@@ -998,199 +838,75 @@ export default function Home() {
           </p>
         </div>
 
-        {/* ── CARDS ── */}
+        {/* ── ARTICLES ── */}
         {loading ? (
-          <div
-            style={{
-              textAlign: 'center',
-              color: theme.textMuted,
-              padding: S.xxl,
-              fontFamily: F.jakarta,
-              transition: transition(transitionDur),
-            }}
-          >
+          <div style={{ textAlign: 'center', color: theme.textMuted, padding: S.xxl, fontFamily: F.jakarta, transition: transition(transitionDur) }}>
             Loading...
           </div>
+        ) : articles.length === 0 ? (
+          <div style={{ textAlign: 'center', color: theme.textMuted, padding: S.xxl }}>
+            No articles yet. Check back soon.
+          </div>
         ) : (
-          <div
-            className="two-col-wrapper"
-            style={{display: 'flex', gap: S.lg, alignItems: 'stretch'}}
-          >
-            {/* ── LIVE FEED ── */}
-            <Card title="the live feed" theme={theme} transitionDur={transitionDur}>
-              {sprintStatus ? (
-                <>
-                  <div style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
-                    <div style={{display: 'flex', justifyContent: 'space-between', gap: S.sm}}>
-                      <Label theme={theme} transitionDur={transitionDur} muted>Current Focus</Label>
-                      <Label theme={theme} transitionDur={transitionDur} muted>Deadline</Label>
-                    </div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        gap: S.sm,
-                        fontFamily: F.jakarta,
-                        fontWeight: 700,
-                        fontSize: '20px',
-                        lineHeight: '16px',
-                        letterSpacing: '0.2px',
-                        color: theme.accent,
-                        transition: transition(transitionDur),
-                      }}
-                    >
-                      <span>Sprint {sprintStatus.sprintName}</span>
-                      <span style={{whiteSpace: 'nowrap'}}>
-                        {formatDateShort(sprintStatus.deadline)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div style={{display: 'flex', flexDirection: 'column', gap: '2px'}}>
-                    <Label theme={theme} transitionDur={transitionDur}>Technical Status</Label>
-                    <p
-                      style={{
-                        fontFamily: F.jakarta,
-                        fontStyle: 'italic',
-                        fontWeight: 400,
-                        fontSize: '16px',
-                        lineHeight: '28px',
-                        color: theme.textBody,
-                        margin: 0,
-                        transition: transition(transitionDur),
-                      }}
-                    >
-                      {sprintStatus.technicalStatus}
-                    </p>
-                  </div>
-
-                  <div style={{display: 'flex', flexDirection: 'column', gap: '2px'}}>
-                    <Label theme={theme} transitionDur={transitionDur}>Strategic Objective</Label>
-                    <p
-                      style={{
-                        fontFamily: F.jakarta,
-                        fontStyle: 'italic',
-                        fontWeight: 400,
-                        fontSize: '16px',
-                        lineHeight: '28px',
-                        color: theme.textBody,
-                        margin: 0,
-                        transition: transition(transitionDur),
-                      }}
-                    >
-                      {sprintStatus.strategicObjective}
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <p style={{color: theme.textMuted, margin: 0}}>No sprint status available.</p>
-              )}
-            </Card>
-
-            {/* ── RAW LOG ── */}
-            <Card title="the raw log" theme={theme} transitionDur={transitionDur}>
-              {totalPages > 1 && (
-                <div
-                  className="pagination-row"
-                  style={{display: 'flex', justifyContent: 'space-between', gap: '8px'}}
-                >
-                  <PillButton
-                    size="lg"
-                    disabled={logPage === totalPages - 1}
-                    onClick={() => changePage(Math.min(logPage + 1, totalPages - 1))}
-                    theme={theme}
-                    transitionDur={transitionDur}
-                  >
-                    <ArrowLeft />
-                    Previous Entries
-                  </PillButton>
-                  <PillButton
-                    size="lg"
-                    disabled={logPage === 0}
-                    onClick={() => changePage(Math.max(logPage - 1, 0))}
-                    theme={theme}
-                    transitionDur={transitionDur}
-                  >
-                    Recent Entries
-                    <ArrowRight />
-                  </PillButton>
-                </div>
-              )}
-
-              <div
+          <div style={{ display: 'flex', flexDirection: 'column', gap: S.md }}>
+            {articles.map((article) => (
+              <Link
+                key={article._id}
+                href={`/blog/${article.slug.current}`}
+                className="article-card"
                 style={{
-                  overflow: 'hidden',
-                  height: logContainerHeight,
-                  transition: 'height 0.25s ease',
+                  background: theme.glassPanel,
+                  borderColor: theme.glassBorder,
+                  boxShadow: theme.boxShadow,
+                  color: theme.textBody,
+                  gridTemplateColumns: article.image ? '1fr 160px' : '1fr',
+                  transition: `${transition(transitionDur)}, transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease`,
                 }}
               >
-                <div ref={logEntriesRef} className={`log-entries${logFading ? ' fading' : ''}`}>
-                {pagedEntries.length > 0 ? (
-                  pagedEntries.map((entry) => (
-                    <div key={entry._id} style={{display: 'flex', flexDirection: 'column', gap: '8px'}}>
-                      <Label theme={theme} transitionDur={transitionDur} muted>Sprint 01</Label>
-                      <span
-                        style={{
-                          fontFamily: F.jakarta,
-                          fontWeight: 700,
-                          fontSize: '20px',
-                          lineHeight: '16px',
-                          letterSpacing: '0.2px',
-                          color: theme.accent,
-                          transition: transition(transitionDur),
-                        }}
-                      >
-                        {formatDateLong(entry.entryDate)}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                    <time style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, transition: transition(transitionDur) }}>
+                      {formatDate(article.publishedAt)}
+                    </time>
+                    {article.readingTime && (
+                      <span style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, transition: transition(transitionDur) }}>
+                        · {article.readingTime} min read
                       </span>
-                      <p
-                        style={{
-                          fontFamily: F.jakarta,
-                          fontWeight: 400,
-                          fontSize: '16px',
-                          lineHeight: '28px',
-                          color: theme.textBody,
-                          margin: 0,
-                          transition: transition(transitionDur),
-                        }}
-                      >
-                        {entry.content}
-                      </p>
-                    </div>
-                  ))
-                ) : (
-                  <p style={{color: theme.textMuted, margin: 0}}>No log entries yet.</p>
-                )}
+                    )}
+                    {article.tags && article.tags.map((tag) => (
+                      <span key={tag} style={{
+                        padding: '2px 10px', background: `${theme.accent}22`, border: `1px solid ${theme.accent}44`,
+                        borderRadius: '999px', fontSize: '11px', fontFamily: F.jakarta, fontWeight: 600,
+                        color: theme.accent, letterSpacing: '0.3px', transition: transition(transitionDur),
+                      }}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <h2 style={{
+                    fontFamily: F.fraunces, fontWeight: 700, fontSize: '22px', lineHeight: '1.3',
+                    color: theme.textBody, margin: 0, transition: transition(transitionDur),
+                  }}>
+                    {article.title}
+                  </h2>
+                  {article.excerpt && (
+                    <p style={{
+                      fontFamily: F.jakarta, fontSize: '15px', lineHeight: '1.65',
+                      color: theme.textMuted, margin: 0, transition: transition(transitionDur),
+                    }}>
+                      {article.excerpt}
+                    </p>
+                  )}
                 </div>
-              </div>
-            </Card>
+                {article.image && (
+                  <div className="article-image" style={{ width: '160px', height: '120px', borderRadius: '12px', overflow: 'hidden', flexShrink: 0, alignSelf: 'center' }}>
+                    <img src={urlFor(article.image).width(320).height(240).fit('crop').url()} alt={article.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                )}
+              </Link>
+            ))}
           </div>
         )}
-
-        {/* ── FOOTER STRIP ── */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: S.sm,
-            borderTop: `1px solid ${theme.divider}`,
-            paddingTop: S.sm,
-            transition: transition(transitionDur),
-          }}
-        >
-          <span style={{color: theme.accent, fontSize: '16px', lineHeight: 1, transition: transition(transitionDur)}}>✦</span>
-          <span
-            style={{
-              fontFamily: F.jakarta,
-              fontWeight: 400,
-              fontSize: '14px',
-              lineHeight: '20px',
-              color: theme.textMuted,
-              transition: transition(transitionDur),
-            }}
-          >
-            Coming soon: Essays, articles, and thinking out loud.
-          </span>
-        </div>
       </div>
 
       <ContactModal
