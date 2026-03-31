@@ -45,3 +45,12 @@ export const ARTICLE_QUERY = `
     author,
   }
 `
+
+export const ARTICLE_NAV_QUERY = `{
+  "prev": *[_type == "article" && publishedAt < $publishedAt] | order(publishedAt desc) [0] {
+    _id, title, slug
+  },
+  "next": *[_type == "article" && publishedAt > $publishedAt] | order(publishedAt asc) [0] {
+    _id, title, slug
+  }
+}`

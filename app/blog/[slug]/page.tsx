@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { PortableText } from '@portabletext/react'
 import { sanityFetch } from '@/sanity/client'
-import { ARTICLE_QUERY } from '@/sanity/queries'
+import { ARTICLE_QUERY, ARTICLE_NAV_QUERY } from '@/sanity/queries'
 import { urlFor } from '@/src/sanity/lib/image'
 import { TimeTheme, getThemeForHour, formatVirtualTime, getBlobAnimationDuration } from '../../timeThemes'
 
@@ -195,6 +195,8 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
   const [article, setArticle] = useState<Article | null>(null)
   const [loading, setLoading] = useState(true)
   const [slug, setSlug] = useState('')
+  const [prevArticle, setPrevArticle] = useState<{ _id: string; title: string; slug: { current: string } } | null>(null)
+  const [nextArticle, setNextArticle] = useState<{ _id: string; title: string; slug: { current: string } } | null>(null)
   const [virtualMinutes, setVirtualMinutes] = useState(() => {
     const now = new Date()
     return now.getHours() * 60 + now.getMinutes()
@@ -209,7 +211,18 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
   useEffect(() => {
     if (!slug) return
     sanityFetch<Article>({ query: ARTICLE_QUERY, params: { slug } })
-      .then((data) => setArticle(data || null))
+      .then((data) => {
+        setArticle(data || null)
+        if (data?.publishedAt) {
+          sanityFetch<{ prev: any; next: any }>({
+            query: ARTICLE_NAV_QUERY,
+            params: { publishedAt: data.publishedAt },
+          }).then(({ prev, next }) => {
+            setPrevArticle(prev || null)
+            setNextArticle(next || null)
+          }).catch(console.error)
+        }
+      })
       .catch(console.error)
       .finally(() => setLoading(false))
   }, [slug])
@@ -545,8 +558,11 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
             )
           })()}
 
-          {/* Substack + back */}
+          {/* Back + Substack (swapped) */}
           <div style={{ display: 'flex', alignItems: 'center', gap: S.md, flexWrap: 'wrap' }}>
+            <Link href="/blog" style={{ color: theme.accent, textDecoration: 'none', fontFamily: F.jakarta, fontWeight: 600, fontSize: '14px', transition: transition(transitionDur) }}>
+              ← Back to all articles
+            </Link>
             {article.originalUrl && (
               <a href={article.originalUrl} target="_blank" rel="noopener noreferrer" className="pressable"
                 style={{
@@ -560,10 +576,39 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
                 Read on Substack →
               </a>
             )}
-            <Link href="/blog" style={{ color: theme.accent, textDecoration: 'none', fontFamily: F.jakarta, fontWeight: 600, fontSize: '14px', transition: transition(transitionDur) }}>
-              ← Back to all articles
-            </Link>
           </div>
+
+          {/* Prev / Next navigation */}
+          {(prevArticle || nextArticle) && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: S.md, paddingTop: S.lg, borderTop: `1px solid ${theme.divider}`, transition: transition(transitionDur) }}>
+              {/* Previous (older) */}
+              <div>
+                {prevArticle ? (
+                  <Link href={`/blog/${prevArticle.slug.current}`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <span style={{ fontFamily: F.jakarta, fontWeight: 600, fontSize: '11px', letterSpacing: '0.8px', textTransform: 'uppercase', color: theme.textMuted, transition: transition(transitionDur) }}>
+                      ← Previous
+                    </span>
+                    <span style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '16px', lineHeight: '1.3', color: theme.accent, transition: transition(transitionDur) }}>
+                      {prevArticle.title}
+                    </span>
+                  </Link>
+                ) : <div />}
+              </div>
+              {/* Next (newer) */}
+              <div style={{ textAlign: 'right' }}>
+                {nextArticle ? (
+                  <Link href={`/blog/${nextArticle.slug.current}`} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'flex-end' }}>
+                    <span style={{ fontFamily: F.jakarta, fontWeight: 600, fontSize: '11px', letterSpacing: '0.8px', textTransform: 'uppercase', color: theme.textMuted, transition: transition(transitionDur) }}>
+                      Next →
+                    </span>
+                    <span style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '16px', lineHeight: '1.3', color: theme.accent, transition: transition(transitionDur) }}>
+                      {nextArticle.title}
+                    </span>
+                  </Link>
+                ) : <div />}
+              </div>
+            </div>
+          )}
         </footer>
       </article>
     </>
