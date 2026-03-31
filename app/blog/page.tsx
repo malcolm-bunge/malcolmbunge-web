@@ -240,7 +240,7 @@ function ContactModal({ isOpen, onClose, theme, transitionDur }: { isOpen: boole
   if (!isOpen) return null
 
   const contacts = [
-    { label: 'Email', value: 'hallo@malcolmbunge.de', href: 'mailto:hallo@malcolmbunge.de', icon: MailIcon },
+    { label: 'Email', value: 'hello@malcolmbunge.com', href: 'mailto:hello@malcolmbunge.com', icon: MailIcon },
     { label: 'LinkedIn', value: 'linkedin.com/in/malcolmbunge', href: 'https://linkedin.com/in/malcolmbunge', icon: LinkedInIcon },
     { label: 'Substack', value: 'mbunge.substack.com', href: 'https://mbunge.substack.com', icon: SubstackIcon },
   ]
@@ -577,6 +577,15 @@ export default function BlogPage() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* ── Legal footer ── */}
+      <div
+        className="content-wrapper"
+        style={{ maxWidth: '1512px', margin: '0 auto', padding: `0 ${S.lg} ${S.xl}`, display: 'flex', gap: S.md, justifyContent: 'flex-end' }}
+      >
+        <Link href="/impressum" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Impressum</Link>
+        <Link href="/datenschutz" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Datenschutz</Link>
       </div>
 
       <ContactModal isOpen={contactOpen} onClose={() => setContactOpen(false)} theme={theme} transitionDur={transitionDur} />

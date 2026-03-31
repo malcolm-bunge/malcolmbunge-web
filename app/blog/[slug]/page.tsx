@@ -154,7 +154,7 @@ function ContactModal({ isOpen, onClose, theme, transitionDur }: { isOpen: boole
   }, [isOpen, onClose])
   if (!isOpen) return null
   const contacts = [
-    { label: 'Email', value: 'hallo@malcolmbunge.de', href: 'mailto:hallo@malcolmbunge.de', icon: MailIcon },
+    { label: 'Email', value: 'hello@malcolmbunge.com', href: 'mailto:hello@malcolmbunge.com', icon: MailIcon },
     { label: 'LinkedIn', value: 'linkedin.com/in/malcolmbunge', href: 'https://linkedin.com/in/malcolmbunge', icon: LinkedInIcon },
     { label: 'Substack', value: 'mbunge.substack.com', href: 'https://mbunge.substack.com', icon: SubstackIcon },
   ]
@@ -620,6 +620,12 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
             </div>
           )}
         </footer>
+
+        {/* ── Legal footer ── */}
+        <div style={{ maxWidth: '720px', margin: '0 auto', padding: `${S.xl} ${S.lg}`, display: 'flex', gap: S.md, justifyContent: 'flex-end' }}>
+          <Link href="/impressum" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Impressum</Link>
+          <Link href="/datenschutz" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Datenschutz</Link>
+        </div>
       </article>
     </>
   )
