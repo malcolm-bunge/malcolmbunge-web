@@ -343,9 +343,9 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
           100% { transform: scale(1.05) translate(0%, 0%); }
         }
         @media (max-width: 1023px) {
-          .nav-intro { display: none !important; }
           .nav-bar { justify-content: flex-end !important; }
           .article-title { font-size: 36px !important; }
+          .breadcrumb-article { display: none !important; }
         }
       `}</style>
 
@@ -372,13 +372,24 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
         {/* Nav */}
         <div style={{ maxWidth: '1512px', margin: '0 auto', padding: `${S.xxl} ${S.lg} 0` }}>
           <div className="nav-bar" style={{ display: 'flex', alignItems: 'flex-end', gap: '10px', marginBottom: S.xs }}>
-            <p className="nav-intro" style={{ flex: 1, fontFamily: F.jakarta, fontWeight: 500, fontSize: '14px', color: theme.textMuted, margin: 0, transition: transition(transitionDur) }}>
-              malcolmbunge_V1c_final_202603.com // Writing on AI, design, and the people in between.
-            </p>
+            <nav className="nav-intro" style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '6px', fontFamily: F.jakarta, fontWeight: 500, fontSize: '14px', color: theme.textMuted, margin: 0, transition: transition(transitionDur) }}>
+              <Link href="/" style={{ color: theme.textMuted, textDecoration: 'none', transition: `color ${transitionDur} ease` }}
+                onMouseEnter={e => (e.currentTarget.style.color = theme.accent)}
+                onMouseLeave={e => (e.currentTarget.style.color = theme.textMuted)}>
+                malcolm bunge
+              </Link>
+              <span style={{ opacity: 0.4 }}>/</span>
+              <Link href="/blog" style={{ color: theme.textMuted, textDecoration: 'none', transition: `color ${transitionDur} ease` }}
+                onMouseEnter={e => (e.currentTarget.style.color = theme.accent)}
+                onMouseLeave={e => (e.currentTarget.style.color = theme.textMuted)}>
+                writing
+              </Link>
+              <span className="breadcrumb-article" style={{ opacity: 0.4 }}>/</span>
+              <span className="breadcrumb-article" style={{ color: theme.textBody, transition: `color ${transitionDur} ease`, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {article?.title ?? '…'}
+              </span>
+            </nav>
             <TimeWidget virtualMinutes={virtualMinutes} setVirtualMinutes={setVirtualMinutes} isPlaying={isPlaying} setIsPlaying={setIsPlaying} theme={theme} transitionDur={transitionDur} />
-            <Link href="/blog" style={{ textDecoration: 'none' }}>
-              <PillButton theme={theme} transitionDur={transitionDur}>← Articles</PillButton>
-            </Link>
             <PillButton onClick={() => setContactOpen(true)} theme={theme} transitionDur={transitionDur}>Contact</PillButton>
           </div>
 
