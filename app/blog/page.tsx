@@ -391,6 +391,8 @@ export default function BlogPage() {
           .main-name { font-size: 48px !important; line-height: 52px !important; }
           .nav-intro { display: none !important; }
           .nav-bar { justify-content: flex-end !important; }
+        }
+        @media (max-width: 639px) {
           .article-image { display: none !important; }
         }
       `}</style>
