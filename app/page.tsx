@@ -761,7 +761,7 @@ export default function Home() {
       <div
         className="content-wrapper"
         style={{
-          maxWidth: '720px',
+          maxWidth: '860px',
           margin: '0 auto',
           padding: `${S.xxl} ${S.lg}`,
           display: 'flex',
