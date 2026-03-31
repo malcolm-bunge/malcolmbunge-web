@@ -25,10 +25,14 @@ const S = {
   xxl: '64px',
 }
 
+const versionStamp = () => {
+  const d = new Date()
+  return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}`
+}
+
 const META = {
   name: 'malcolm bunge',
   tagline: 'Design & Build',
-  intro: 'malcolmbunge_V1c_final_202603.com // Currently building this portfolio with Claude. Everything you see is real-time work.',
 }
 
 // Fast-forward: 1 real ms = PLAY_SPEED virtual minutes
@@ -787,7 +791,7 @@ export default function Home() {
                 transition: transition(transitionDur),
               }}
             >
-              {META.intro}
+              {`malcolmbunge_V1c_final_${versionStamp()}.com`}
             </p>
             <TimeWidget
               virtualMinutes={virtualMinutes}

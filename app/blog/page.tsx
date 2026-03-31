@@ -26,6 +26,11 @@ const S = {
 
 const PLAY_SPEED = 1
 
+const versionStamp = () => {
+  const d = new Date()
+  return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}`
+}
+
 const transition = (duration = '3s') =>
   `color ${duration} ease, background-color ${duration} ease, background ${duration} ease, border-color ${duration} ease, box-shadow ${duration} ease, opacity ${duration} ease`
 
@@ -432,7 +437,7 @@ export default function BlogPage() {
               className="nav-intro"
               style={{ flex: 1, fontFamily: F.jakarta, fontWeight: 500, fontSize: '14px', lineHeight: '20px', color: theme.textMuted, margin: 0, transition: transition(transitionDur) }}
             >
-              malcolmbunge_V1c_final_202603.com // Writing on AI, design, and the people in between.
+              {`malcolmbunge_V1c_final_${versionStamp()}.com // Writing on AI, design, and the people in between.`}
             </p>
             <TimeWidget
               virtualMinutes={virtualMinutes}
