@@ -596,8 +596,9 @@ export default function Home() {
         * { box-sizing: border-box; }
 
         .article-card {
-          display: grid;
-          gap: 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
           padding: 28px;
           border-radius: 20px;
           backdrop-filter: blur(24px) saturate(160%);
@@ -682,9 +683,6 @@ export default function Home() {
           .main-name { font-size: 48px !important; line-height: 52px !important; }
           .nav-intro { display: none !important; }
           .nav-bar { justify-content: flex-end !important; }
-        }
-        @media (max-width: 639px) {
-          .article-image { display: none !important; }
         }
 
         /* ── Press & hover animations ── */
@@ -859,49 +857,57 @@ export default function Home() {
                   borderColor: theme.glassBorder,
                   boxShadow: theme.boxShadow,
                   color: theme.textBody,
-                  gridTemplateColumns: article.image ? '1fr 160px' : '1fr',
                   transition: `${transition(transitionDur)}, transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease`,
                 }}
               >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                    <time style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, transition: transition(transitionDur) }}>
-                      {formatDate(article.publishedAt)}
-                    </time>
-                    {article.readingTime && (
-                      <span style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, transition: transition(transitionDur) }}>
-                        · {article.readingTime} min read
-                      </span>
-                    )}
-                    {article.tags && article.tags.map((tag) => (
-                      <span key={tag} style={{
-                        padding: '2px 10px', background: `${theme.accent}22`, border: `1px solid ${theme.accent}44`,
-                        borderRadius: '999px', fontSize: '11px', fontFamily: F.jakarta, fontWeight: 600,
-                        color: theme.accent, letterSpacing: '0.3px', transition: transition(transitionDur),
-                      }}>
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  <h2 style={{
-                    fontFamily: F.fraunces, fontWeight: 700, fontSize: '22px', lineHeight: '1.3',
-                    color: theme.textBody, margin: 0, transition: transition(transitionDur),
-                  }}>
-                    {article.title}
-                  </h2>
-                  {article.excerpt && (
-                    <p style={{
-                      fontFamily: F.jakarta, fontSize: '15px', lineHeight: '1.65',
-                      color: theme.textMuted, margin: 0, transition: transition(transitionDur),
-                    }}>
-                      {article.excerpt}
-                    </p>
+                {/* Meta row */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  <time style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, transition: transition(transitionDur) }}>
+                    {formatDate(article.publishedAt)}
+                  </time>
+                  {article.readingTime && (
+                    <span style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, transition: transition(transitionDur) }}>
+                      · {article.readingTime} min read
+                    </span>
                   )}
+                  {article.tags && article.tags.map((tag) => (
+                    <span key={tag} style={{
+                      padding: '2px 10px', background: `${theme.accent}22`, border: `1px solid ${theme.accent}44`,
+                      borderRadius: '999px', fontSize: '11px', fontFamily: F.jakarta, fontWeight: 600,
+                      color: theme.accent, letterSpacing: '0.3px', transition: transition(transitionDur),
+                    }}>
+                      {tag}
+                    </span>
+                  ))}
                 </div>
+
+                {/* Title */}
+                <h2 style={{
+                  fontFamily: F.fraunces, fontWeight: 700, fontSize: '22px', lineHeight: '1.3',
+                  color: theme.textBody, margin: 0, transition: transition(transitionDur),
+                }}>
+                  {article.title}
+                </h2>
+
+                {/* Featured image — full width, below title */}
                 {article.image && (
-                  <div className="article-image" style={{ width: '160px', height: '120px', borderRadius: '12px', overflow: 'hidden', flexShrink: 0, alignSelf: 'center' }}>
-                    <img src={urlFor(article.image).width(320).height(240).fit('crop').url()} alt={article.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{ width: '100%', height: '220px', borderRadius: '12px', overflow: 'hidden' }}>
+                    <img
+                      src={urlFor(article.image).width(860).height(440).fit('crop').url()}
+                      alt={article.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
                   </div>
+                )}
+
+                {/* Excerpt */}
+                {article.excerpt && (
+                  <p style={{
+                    fontFamily: F.jakarta, fontSize: '15px', lineHeight: '1.65',
+                    color: theme.textMuted, margin: 0, transition: transition(transitionDur),
+                  }}>
+                    {article.excerpt}
+                  </p>
                 )}
               </Link>
             ))}
