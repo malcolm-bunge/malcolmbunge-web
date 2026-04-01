@@ -41,6 +41,7 @@ interface Article {
   readingTime?: number
   originalUrl?: string
   author?: string
+  vgWortPixelUrl?: string
 }
 
 // ── Icons ──────────────────────────────────────────────────────────────────────
@@ -519,6 +520,11 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
         {/* Body */}
         <div style={{ marginBottom: S.xl }}>
           {article.content && <PortableText value={article.content} components={portableTextComponents} />}
+          {article.vgWortPixelUrl && (
+            // VG Wort METIS counting pixel — must remain in the visible content area
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={article.vgWortPixelUrl} width={1} height={1} alt="" style={{ display: 'block' }} />
+          )}
         </div>
 
         {/* Footer */}

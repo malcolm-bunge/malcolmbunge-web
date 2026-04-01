@@ -43,6 +43,7 @@ export const ARTICLE_QUERY = `
     readingTime,
     originalUrl,
     author,
+    vgWortPixelUrl,
   }
 `
 

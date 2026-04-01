@@ -81,6 +81,13 @@ export const article = defineType({
       description: 'Estimated reading time in minutes',
       validation: (rule) => rule.min(1),
     }),
+    defineField({
+      name: 'vgWortPixelUrl',
+      title: 'VG Wort Pixel URL',
+      type: 'url',
+      description: 'Automatically set via webhook. Do not edit manually.',
+      readOnly: true,
+    }),
   ],
   preview: {
     select: {
