@@ -360,11 +360,9 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
           50% { transform: scale(1.12) translate(-1.5%, -1%); }
           100% { transform: scale(1.05) translate(0%, 0%); }
         }
-        @media (max-width: 1023px) {
+        @media (max-width: 720px) {
           .main-name { font-size: 48px !important; line-height: 52px !important; }
-          .nav-intro  { display: none !important; }
-          .nav-bar    { justify-content: flex-end !important; }
-          .article-title { font-size: 36px !important; }
+          .article-title { font-size: 32px !important; }
           .breadcrumb-article { display: none !important; }
         }
       `}</style>
@@ -389,12 +387,9 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
       </div>
 
       <div className="content-wrapper">
-        {/* Nav */}
-        <div style={{ maxWidth: '1512px', margin: '0 auto', padding: `${S.xxl} ${S.lg} 0` }}>
-          <div className="nav-bar" style={{ display: 'flex', alignItems: 'flex-end', gap: '10px', marginBottom: S.xs }}>
-            <p className="nav-intro" style={{ flex: 1, fontFamily: F.jakarta, fontWeight: 500, fontSize: '14px', color: theme.textMuted, margin: 0, transition: transition(transitionDur) }}>
-              {`malcolmbunge_V1c_final_${versionStamp()}.com // Writing on AI, design, and the people in between.`}
-            </p>
+        {/* Nav — same 720px column as article body */}
+        <div style={{ maxWidth: '720px', margin: '0 auto', padding: `${S.xxl} ${S.lg} 0` }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', marginBottom: S.xs }}>
             <TimeWidget virtualMinutes={virtualMinutes} setVirtualMinutes={setVirtualMinutes} isPlaying={isPlaying} setIsPlaying={setIsPlaying} theme={theme} transitionDur={transitionDur} />
             <PillButton onClick={() => setContactOpen(true)} theme={theme} transitionDur={transitionDur}>Contact</PillButton>
           </div>
