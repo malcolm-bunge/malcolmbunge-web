@@ -917,15 +917,12 @@ export default function Home() {
             ))}
           </div>
         )}
-      </div>
 
-      {/* ── Legal footer ── */}
-      <div
-        className="content-wrapper"
-        style={{ maxWidth: '1512px', margin: '0 auto', padding: `0 ${S.lg} ${S.xl}`, display: 'flex', gap: S.md, justifyContent: 'flex-end' }}
-      >
-        <Link href="/impressum" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Legal Notice</Link>
-        <Link href="/datenschutz" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Privacy Policy</Link>
+        {/* ── Legal footer ── */}
+        <div style={{ display: 'flex', gap: S.md, justifyContent: 'flex-end' }}>
+          <Link href="/impressum" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Legal Notice</Link>
+          <Link href="/datenschutz" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Privacy Policy</Link>
+        </div>
       </div>
 
       <ContactModal
