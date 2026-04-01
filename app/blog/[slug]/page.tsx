@@ -388,7 +388,7 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
 
       <div className="content-wrapper">
         {/* Nav — same 720px column as article body */}
-        <div style={{ maxWidth: '720px', margin: '0 auto', padding: `${S.xxl} ${S.lg} 0` }}>
+        <div style={{ maxWidth: '860px', margin: '0 auto', padding: `${S.xxl} ${S.lg} 0` }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', marginBottom: S.xs }}>
             <TimeWidget virtualMinutes={virtualMinutes} setVirtualMinutes={setVirtualMinutes} isPlaying={isPlaying} setIsPlaying={setIsPlaying} theme={theme} transitionDur={transitionDur} />
             <PillButton onClick={() => setContactOpen(true)} theme={theme} transitionDur={transitionDur}>Contact</PillButton>
@@ -447,7 +447,7 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
       )}
 
       {/* Article */}
-      <article style={{ maxWidth: '720px', margin: '0 auto', padding: `${S.xxl} ${S.lg} ${S.xxl}` }}>
+      <article style={{ maxWidth: '860px', margin: '0 auto', padding: `${S.xxl} ${S.lg} ${S.xxl}` }}>
 
         {/* Breadcrumb — below hero, above title */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: '6px', fontFamily: F.jakarta, fontWeight: 500, fontSize: '14px', color: theme.textMuted, marginBottom: S.lg, transition: transition(transitionDur) }}>
@@ -619,7 +619,7 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
         </footer>
 
         {/* ── Legal footer ── */}
-        <div style={{ maxWidth: '720px', margin: '0 auto', padding: `${S.xl} ${S.lg}`, display: 'flex', gap: S.md, justifyContent: 'flex-end' }}>
+        <div style={{ maxWidth: '860px', margin: '0 auto', padding: `${S.xl} ${S.lg}`, display: 'flex', gap: S.md, justifyContent: 'flex-end' }}>
           <Link href="/impressum" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Legal Notice</Link>
           <Link href="/datenschutz" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Privacy Policy</Link>
         </div>
