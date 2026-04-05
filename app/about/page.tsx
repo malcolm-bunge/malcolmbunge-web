@@ -483,6 +483,75 @@ export default function AboutPage() {
                       {children}
                     </p>
                   ),
+                  h1: ({ children }) => (
+                    <h1 style={{
+                      fontFamily: F.fraunces,
+                      fontWeight: 700,
+                      fontSize: '48px',
+                      lineHeight: '1.1',
+                      color: theme.textBody,
+                      margin: `0 0 ${S.md}`,
+                      transition: transition(transitionDur),
+                    }}>
+                      {children}
+                    </h1>
+                  ),
+                  h2: ({ children }) => (
+                    <h2 style={{
+                      fontFamily: F.fraunces,
+                      fontWeight: 700,
+                      fontSize: '32px',
+                      lineHeight: '1.2',
+                      color: theme.textBody,
+                      margin: `0 0 ${S.sm}`,
+                      transition: transition(transitionDur),
+                    }}>
+                      {children}
+                    </h2>
+                  ),
+                  h3: ({ children }) => (
+                    <h3 style={{
+                      fontFamily: F.fraunces,
+                      fontWeight: 700,
+                      fontSize: '22px',
+                      lineHeight: '1.3',
+                      color: theme.textBody,
+                      margin: `0 0 ${S.sm}`,
+                      transition: transition(transitionDur),
+                    }}>
+                      {children}
+                    </h3>
+                  ),
+                  h4: ({ children }) => (
+                    <h4 style={{
+                      fontFamily: F.jakarta,
+                      fontWeight: 700,
+                      fontSize: '16px',
+                      lineHeight: '1.4',
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                      color: theme.accent,
+                      margin: `0 0 ${S.xs}`,
+                      transition: transition(transitionDur),
+                    }}>
+                      {children}
+                    </h4>
+                  ),
+                  blockquote: ({ children }) => (
+                    <blockquote style={{
+                      borderLeft: `3px solid ${theme.accent}`,
+                      paddingLeft: S.md,
+                      margin: `0 0 ${S.md}`,
+                      fontFamily: F.fraunces,
+                      fontStyle: 'italic',
+                      fontSize: '18px',
+                      lineHeight: '1.6',
+                      color: theme.textMuted,
+                      transition: transition(transitionDur),
+                    }}>
+                      {children}
+                    </blockquote>
+                  ),
                 },
               }}
             />
