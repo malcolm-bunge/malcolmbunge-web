@@ -399,7 +399,7 @@ export default function AboutPage() {
 
       <div
         className="content-wrapper"
-        style={{ maxWidth: '1512px', margin: '0 auto', padding: `${S.xxl} ${S.lg}`, display: 'flex', flexDirection: 'column', gap: S.xxl }}
+        style={{ maxWidth: '860px', margin: '0 auto', padding: `${S.xxl} ${S.lg}`, display: 'flex', flexDirection: 'column', gap: S.xxl }}
       >
         {/* ── TOP SECTION ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -457,7 +457,6 @@ export default function AboutPage() {
         ) : (
           <div
             style={{
-              maxWidth: '720px',
               background: theme.glassPanel,
               border: `1px solid ${theme.glassBorder}`,
               borderRadius: '20px',
@@ -494,7 +493,7 @@ export default function AboutPage() {
       {/* ── Legal footer ── */}
       <div
         className="content-wrapper"
-        style={{ maxWidth: '1512px', margin: '0 auto', padding: `0 ${S.lg} ${S.xl}`, display: 'flex', gap: S.md, justifyContent: 'flex-end' }}
+        style={{ maxWidth: '860px', margin: '0 auto', padding: `0 ${S.lg} ${S.xl}`, display: 'flex', gap: S.md, justifyContent: 'flex-end' }}
       >
         <Link href="/impressum" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Legal Notice</Link>
         <Link href="/datenschutz" style={{ fontFamily: F.jakarta, fontSize: '13px', color: theme.textMuted, textDecoration: 'none', transition: transition(transitionDur) }}>Privacy Policy</Link>
