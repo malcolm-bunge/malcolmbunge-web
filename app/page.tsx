@@ -4,7 +4,7 @@ import {useEffect, useRef, useState} from 'react'
 import Link from 'next/link'
 
 import {sanityFetch} from '@/sanity/client'
-import {ARTICLES_QUERY} from '@/sanity/queries'
+import {ARTICLES_QUERY, ABOUT_INTRO_QUERY} from '@/sanity/queries'
 import {urlFor} from '@/src/sanity/lib/image'
 import {TimeTheme, getThemeForHour, formatVirtualTime, getBlobAnimationDuration} from './timeThemes'
 
@@ -548,6 +548,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [contactOpen, setContactOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [bioIntro, setBioIntro] = useState<string>('')
 
   // ── Time state ─────────────────────────────────────────────────────────────
   const [virtualMinutes, setVirtualMinutes] = useState<number>(() => {
@@ -584,6 +585,12 @@ export default function Home() {
       .then((data) => setArticles(data || []))
       .catch(console.error)
       .finally(() => setLoading(false))
+  }, [])
+
+  useEffect(() => {
+    sanityFetch<{introParagraph: string[]}>({query: ABOUT_INTRO_QUERY})
+      .then((data) => setBioIntro(data?.introParagraph?.join('') || ''))
+      .catch(console.error)
   }, [])
 
   return (
@@ -690,6 +697,8 @@ export default function Home() {
           .nav-bar { justify-content: flex-end !important; }
           .desktop-nav { display: none !important; }
           .mobile-nav { display: block !important; }
+          .hero-split { flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; }
+          .hero-bio { padding-bottom: 0 !important; }
         }
         @media (min-width: 1024px) {
           .desktop-nav { display: flex !important; }
@@ -931,38 +940,76 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Name + tagline */}
-          <h1
-            className="main-name"
-            style={{
-              fontFamily: F.fraunces,
-              fontWeight: 700,
-              fontSize: '64px',
-              lineHeight: '64px',
-              letterSpacing: '0.64px',
-              color: theme.textBody,
-              margin: '0 0 2px',
-              textTransform: 'lowercase',
-              transition: transition(transitionDur),
-            }}
-          >
-            {META.name}
-          </h1>
-          <p
-            style={{
-              fontFamily: F.poppins,
-              fontWeight: 600,
-              fontSize: '14px',
-              lineHeight: '19px',
-              letterSpacing: '0.98px',
-              textTransform: 'uppercase',
-              color: theme.accent,
-              margin: 0,
-              transition: transition(transitionDur),
-            }}
-          >
-            {META.tagline}
-          </p>
+          {/* Name + tagline / bio split */}
+          <div className="hero-split" style={{display: 'flex', alignItems: 'flex-start', gap: S.xl}}>
+            {/* Left: name + tagline */}
+            <div style={{flexShrink: 0}}>
+              <h1
+                className="main-name"
+                style={{
+                  fontFamily: F.fraunces,
+                  fontWeight: 700,
+                  fontSize: '64px',
+                  lineHeight: '64px',
+                  letterSpacing: '0.64px',
+                  color: theme.textBody,
+                  margin: '0 0 2px',
+                  textTransform: 'lowercase',
+                  transition: transition(transitionDur),
+                }}
+              >
+                {META.name}
+              </h1>
+              <p
+                style={{
+                  fontFamily: F.poppins,
+                  fontWeight: 600,
+                  fontSize: '14px',
+                  lineHeight: '19px',
+                  letterSpacing: '0.98px',
+                  textTransform: 'uppercase',
+                  color: theme.accent,
+                  margin: 0,
+                  transition: transition(transitionDur),
+                }}
+              >
+                {META.tagline}
+              </p>
+            </div>
+
+            {/* Right: bio intro */}
+            {bioIntro && (
+              <div className="hero-bio" style={{flex: 1, paddingTop: '10px'}}>
+                <p
+                  style={{
+                    fontFamily: F.jakarta,
+                    fontWeight: 400,
+                    fontSize: '15px',
+                    lineHeight: '1.65',
+                    color: theme.textMuted,
+                    margin: '0 0 10px',
+                    transition: transition(transitionDur),
+                  }}
+                >
+                  {bioIntro.length > 200 ? bioIntro.slice(0, bioIntro.lastIndexOf(' ', 200)) + '…' : bioIntro}
+                </p>
+                <Link
+                  href="/about"
+                  style={{
+                    fontFamily: F.jakarta,
+                    fontWeight: 600,
+                    fontSize: '13px',
+                    color: theme.accent,
+                    textDecoration: 'none',
+                    letterSpacing: '0.02em',
+                    transition: transition(transitionDur),
+                  }}
+                >
+                  About →
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* ── ARTICLES ── */}
