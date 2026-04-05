@@ -14,6 +14,13 @@ export const aboutPage = defineType({
       initialValue: 'About Me',
     }),
     defineField({
+      name: 'homepageIntro',
+      title: 'Homepage Intro',
+      type: 'array',
+      of: [{type: 'block'}],
+      description: 'Short intro shown on the homepage, above the articles. Experiment with typography here.',
+    }),
+    defineField({
       name: 'bio',
       title: 'Bio',
       type: 'array',

@@ -49,7 +49,7 @@ export const ARTICLE_QUERY = `
 
 export const ABOUT_INTRO_QUERY = `
   *[_type == "aboutPage"][0] {
-    "introParagraph": bio[_type == "block"][0].children[].text
+    homepageIntro,
   }
 `
 

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import {sanityFetch} from '@/sanity/client'
 import {ARTICLES_QUERY, ABOUT_INTRO_QUERY} from '@/sanity/queries'
 import {urlFor} from '@/src/sanity/lib/image'
+import {PortableText} from '@portabletext/react'
 import {TimeTheme, getThemeForHour, formatVirtualTime, getBlobAnimationDuration} from './timeThemes'
 
 // ── Fonts ────────────────────────────────────────────────────────────────────
@@ -548,7 +549,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [contactOpen, setContactOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [bioIntro, setBioIntro] = useState<string>('')
+  const [homepageIntro, setHomepageIntro] = useState<any[]>([])
 
   // ── Time state ─────────────────────────────────────────────────────────────
   const [virtualMinutes, setVirtualMinutes] = useState<number>(() => {
@@ -588,8 +589,8 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    sanityFetch<{introParagraph: string[]}>({query: ABOUT_INTRO_QUERY})
-      .then((data) => setBioIntro(data?.introParagraph?.join('') || ''))
+    sanityFetch<{homepageIntro: any[]}>({query: ABOUT_INTRO_QUERY})
+      .then((data) => setHomepageIntro(data?.homepageIntro || []))
       .catch(console.error)
   }, [])
 
@@ -697,9 +698,7 @@ export default function Home() {
           .nav-bar { justify-content: flex-end !important; }
           .desktop-nav { display: none !important; }
           .mobile-nav { display: block !important; }
-          .hero-split { flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; }
-          .hero-bio { padding-bottom: 0 !important; }
-        }
+}
         @media (min-width: 1024px) {
           .desktop-nav { display: flex !important; }
           .mobile-nav { display: none !important; }
@@ -940,77 +939,119 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Name + tagline / bio split */}
-          <div className="hero-split" style={{display: 'flex', alignItems: 'flex-start', gap: S.xl}}>
-            {/* Left: name + tagline */}
-            <div style={{flexShrink: 0}}>
-              <h1
-                className="main-name"
-                style={{
-                  fontFamily: F.fraunces,
-                  fontWeight: 700,
-                  fontSize: '64px',
-                  lineHeight: '64px',
-                  letterSpacing: '0.64px',
-                  color: theme.textBody,
-                  margin: '0 0 2px',
-                  textTransform: 'lowercase',
-                  transition: transition(transitionDur),
-                }}
-              >
-                {META.name}
-              </h1>
-              <p
-                style={{
-                  fontFamily: F.poppins,
-                  fontWeight: 600,
-                  fontSize: '14px',
-                  lineHeight: '19px',
-                  letterSpacing: '0.98px',
-                  textTransform: 'uppercase',
-                  color: theme.accent,
-                  margin: 0,
-                  transition: transition(transitionDur),
-                }}
-              >
-                {META.tagline}
-              </p>
-            </div>
-
-            {/* Right: bio intro */}
-            {bioIntro && (
-              <div className="hero-bio" style={{flex: 1, paddingTop: '10px'}}>
-                <p
-                  style={{
-                    fontFamily: F.jakarta,
-                    fontWeight: 400,
-                    fontSize: '15px',
-                    lineHeight: '1.65',
-                    color: theme.textMuted,
-                    margin: '0 0 10px',
-                    transition: transition(transitionDur),
-                  }}
-                >
-                  {bioIntro.length > 200 ? bioIntro.slice(0, bioIntro.lastIndexOf(' ', 200)) + '…' : bioIntro}
-                </p>
-                <Link
-                  href="/about"
-                  style={{
-                    fontFamily: F.jakarta,
-                    fontWeight: 600,
-                    fontSize: '13px',
-                    color: theme.accent,
-                    textDecoration: 'none',
-                    letterSpacing: '0.02em',
-                    transition: transition(transitionDur),
-                  }}
-                >
-                  About →
-                </Link>
-              </div>
-            )}
-          </div>
+          {/* Name + tagline */}
+          <h1
+            className="main-name"
+            style={{
+              fontFamily: F.fraunces,
+              fontWeight: 700,
+              fontSize: '64px',
+              lineHeight: '64px',
+              letterSpacing: '0.64px',
+              color: theme.textBody,
+              margin: '0 0 2px',
+              textTransform: 'lowercase',
+              transition: transition(transitionDur),
+            }}
+          >
+            {META.name}
+          </h1>
+          <p
+            style={{
+              fontFamily: F.poppins,
+              fontWeight: 600,
+              fontSize: '14px',
+              lineHeight: '19px',
+              letterSpacing: '0.98px',
+              textTransform: 'uppercase',
+              color: theme.accent,
+              margin: 0,
+              transition: transition(transitionDur),
+            }}
+          >
+            {META.tagline}
+          </p>
         </div>
+
+        {/* ── HOMEPAGE INTRO ── */}
+        {homepageIntro.length > 0 && (
+          <div className="homepage-intro">
+            <PortableText
+              value={homepageIntro}
+              components={{
+                block: {
+                  normal: ({children}) => (
+                    <p style={{
+                      fontFamily: F.jakarta,
+                      fontWeight: 400,
+                      fontSize: '16px',
+                      lineHeight: '1.75',
+                      color: theme.textMuted,
+                      margin: '0 0 12px',
+                      transition: transition(transitionDur),
+                    }}>{children}</p>
+                  ),
+                  h1: ({children}) => (
+                    <h1 style={{
+                      fontFamily: F.fraunces,
+                      fontWeight: 700,
+                      fontSize: '48px',
+                      lineHeight: '1.1',
+                      color: theme.textBody,
+                      margin: '0 0 16px',
+                      transition: transition(transitionDur),
+                    }}>{children}</h1>
+                  ),
+                  h2: ({children}) => (
+                    <h2 style={{
+                      fontFamily: F.fraunces,
+                      fontWeight: 700,
+                      fontSize: '32px',
+                      lineHeight: '1.2',
+                      color: theme.textBody,
+                      margin: '0 0 12px',
+                      transition: transition(transitionDur),
+                    }}>{children}</h2>
+                  ),
+                  h3: ({children}) => (
+                    <h3 style={{
+                      fontFamily: F.fraunces,
+                      fontWeight: 700,
+                      fontSize: '22px',
+                      lineHeight: '1.3',
+                      color: theme.textBody,
+                      margin: '0 0 10px',
+                      transition: transition(transitionDur),
+                    }}>{children}</h3>
+                  ),
+                  blockquote: ({children}) => (
+                    <blockquote style={{
+                      borderLeft: `3px solid ${theme.accent}`,
+                      paddingLeft: S.md,
+                      margin: '0 0 12px',
+                      fontFamily: F.fraunces,
+                      fontStyle: 'italic',
+                      fontSize: '18px',
+                      lineHeight: '1.6',
+                      color: theme.textMuted,
+                      transition: transition(transitionDur),
+                    }}>{children}</blockquote>
+                  ),
+                },
+                marks: {
+                  strong: ({children}) => <strong style={{fontWeight: 700, color: theme.textBody}}>{children}</strong>,
+                  em: ({children}) => <em style={{fontStyle: 'italic'}}>{children}</em>,
+                  link: ({value, children}) => (
+                    <a href={value?.href} target="_blank" rel="noopener noreferrer"
+                      style={{color: theme.accent, textDecoration: 'underline', textUnderlineOffset: '3px'}}>
+                      {children}
+                    </a>
+                  ),
+                },
+              }}
+            />
+          </div>
+        )}
 
         {/* ── ARTICLES ── */}
         {loading ? (
