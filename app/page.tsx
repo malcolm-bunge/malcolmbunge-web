@@ -801,7 +801,12 @@ export default function Home() {
               theme={theme}
               transitionDur={transitionDur}
             />
-            <PillButton onClick={() => setContactOpen(true)} theme={theme} transitionDur={transitionDur}>
+            <Link href="/about" style={{ textDecoration: 'none' }}>
+              <PillButton theme={theme} transitionDur={transitionDur}>
+                About
+              </PillButton>
+            </Link>
+<PillButton onClick={() => setContactOpen(true)} theme={theme} transitionDur={transitionDur}>
               Contact
             </PillButton>
           </div>

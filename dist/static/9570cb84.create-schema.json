@@ -1,0 +1,92 @@
+[
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "sprintName",
+        "type": "string"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "deadline",
+        "type": "date"
+      },
+      {
+        "rows": 3,
+        "name": "technicalStatus",
+        "type": "text"
+      },
+      {
+        "rows": 3,
+        "name": "strategicObjective",
+        "type": "text"
+      },
+      {
+        "initialValue": false,
+        "name": "isCurrent",
+        "type": "boolean",
+        "title": "Is Current Sprint"
+      }
+    ],
+    "name": "sprintStatus",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "entryDate",
+        "type": "date",
+        "title": "Date"
+      },
+      {
+        "rows": 5,
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "content",
+        "type": "text"
+      }
+    ],
+    "name": "logEntry",
+    "type": "document"
+  }
+]
