@@ -547,6 +547,7 @@ export default function Home() {
   const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
   const [contactOpen, setContactOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   // ── Time state ─────────────────────────────────────────────────────────────
   const [virtualMinutes, setVirtualMinutes] = useState<number>(() => {
@@ -687,7 +688,14 @@ export default function Home() {
           .main-name { font-size: 48px !important; line-height: 52px !important; }
           .nav-intro { display: none !important; }
           .nav-bar { justify-content: flex-end !important; }
+          .desktop-nav { display: none !important; }
+          .mobile-nav { display: block !important; }
         }
+        @media (min-width: 1024px) {
+          .desktop-nav { display: flex !important; }
+          .mobile-nav { display: none !important; }
+        }
+        .menu-item:hover { background: rgba(128,128,128,0.1); }
 
         /* ── Press & hover animations ── */
         .pressable {
@@ -801,14 +809,126 @@ export default function Home() {
               theme={theme}
               transitionDur={transitionDur}
             />
-            <Link href="/about" style={{ textDecoration: 'none' }}>
-              <PillButton theme={theme} transitionDur={transitionDur}>
-                About
+            {/* Desktop nav links */}
+            <div className="desktop-nav" style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+              <Link href="/about" style={{ textDecoration: 'none' }}>
+                <PillButton theme={theme} transitionDur={transitionDur}>
+                  About
+                </PillButton>
+              </Link>
+              <PillButton onClick={() => setContactOpen(true)} theme={theme} transitionDur={transitionDur}>
+                Contact
               </PillButton>
-            </Link>
-<PillButton onClick={() => setContactOpen(true)} theme={theme} transitionDur={transitionDur}>
-              Contact
-            </PillButton>
+            </div>
+
+            {/* Mobile hamburger */}
+            <div className="mobile-nav" style={{position: 'relative'}}>
+              <PillButton onClick={() => setMenuOpen((o) => !o)} theme={theme} transitionDur={transitionDur}>
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor">
+                  {menuOpen ? (
+                    <>
+                      <line x1="2" y1="2" x2="16" y2="16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      <line x1="16" y1="2" x2="2" y2="16" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    </>
+                  ) : (
+                    <>
+                      <line x1="2" y1="4" x2="16" y2="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      <line x1="2" y1="9" x2="16" y2="9" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      <line x1="2" y1="14" x2="16" y2="14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    </>
+                  )}
+                </svg>
+              </PillButton>
+
+              {menuOpen && (
+                <>
+                  {/* Backdrop */}
+                  <div
+                    onClick={() => setMenuOpen(false)}
+                    style={{position: 'fixed', inset: 0, zIndex: 99}}
+                  />
+                  {/* Dropdown */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 'calc(100% + 8px)',
+                      right: 0,
+                      zIndex: 100,
+                      minWidth: '180px',
+                      background: theme.glassPanel,
+                      backdropFilter: 'blur(24px) saturate(180%)',
+                      WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+                      border: `1px solid ${theme.glassBorder}`,
+                      borderRadius: '16px',
+                      padding: '8px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '4px',
+                    }}
+                  >
+                    {[
+                      {label: 'About', href: '/about', internal: true},
+                      {label: 'LinkedIn', href: 'https://www.linkedin.com/in/malcolmbunge/', internal: false},
+                      {label: 'Substack', href: 'https://mbunge.substack.com/', internal: false},
+                    ].map(({label, href, internal}) => (
+                      internal ? (
+                        <Link
+                          key={label}
+                          href={href}
+                          style={{textDecoration: 'none'}}
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          <div className="menu-item" style={{
+                            padding: '10px 16px',
+                            borderRadius: '10px',
+                            fontFamily: F.jakarta,
+                            fontWeight: 500,
+                            fontSize: '15px',
+                            color: theme.accent,
+                            cursor: 'pointer',
+                          }}>{label}</div>
+                        </Link>
+                      ) : (
+                        <a
+                          key={label}
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{textDecoration: 'none'}}
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          <div className="menu-item" style={{
+                            padding: '10px 16px',
+                            borderRadius: '10px',
+                            fontFamily: F.jakarta,
+                            fontWeight: 500,
+                            fontSize: '15px',
+                            color: theme.accent,
+                            cursor: 'pointer',
+                          }}>{label}</div>
+                        </a>
+                      )
+                    ))}
+                    <div style={{height: '1px', background: theme.divider, margin: '4px 8px'}} />
+                    <div
+                      className="menu-item"
+                      onClick={() => { setMenuOpen(false); setContactOpen(true) }}
+                      style={{
+                        padding: '10px 16px',
+                        borderRadius: '10px',
+                        fontFamily: F.jakarta,
+                        fontWeight: 500,
+                        fontSize: '15px',
+                        color: theme.accent,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Contact
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Name + tagline */}
