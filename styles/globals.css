@@ -2,14 +2,14 @@
 
 @theme {
   --font-sans: 'Inter', sans-serif;
-  --font-poppins: 'Poppins', sans-serif;
+  --font-fraunces: 'Fraunces', serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
-  --color-brand: #fccb00;
-  --color-blue: #1da9ef;
-  --color-bg: #1b1b34;
-  --color-text: #e1d9cc;
-  --color-ink: #4d412d;
-  --color-atmosphere: #A855F7;
+  --color-bg: #13131a;
+  --color-fg: #e8e0d5;
+  --color-muted: #8a8499;
+  --color-border: rgba(255,255,255,0.08);
+  --color-accent: #ff6b81;
 }
 
 *,
@@ -21,9 +21,8 @@
 }
 
 body {
-  background-color: #060612;
-  min-height: 100dvh;
-  color: #f2f2fa;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: #13131a;
+  color: #e8e0d5;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
