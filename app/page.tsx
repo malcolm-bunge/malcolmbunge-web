@@ -95,7 +95,7 @@ function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
         onClick={(e) => e.stopPropagation()}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h2 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '22px', color: '#e8e0d5', margin: 0 }}>
+          <h2 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '22px', color: '#e8e0d5', margin: 0, fontOpticalSizing: 'none' as any, fontVariationSettings: "'opsz' 72, 'SOFT' 100" }}>
             Get in touch
           </h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#8a8499', fontSize: '18px', cursor: 'pointer', lineHeight: 1, padding: '4px' }}>
@@ -198,6 +198,8 @@ export default function Home() {
                   lineHeight: '1.0',
                   letterSpacing: '-2px',
                   color: '#e8e0d5',
+                  fontOpticalSizing: 'none' as any,
+                  fontVariationSettings: "'opsz' 72, 'SOFT' 100",
                 }}
               >
                 <SplitTitle title={hero.title} />
@@ -290,7 +292,7 @@ export default function Home() {
               <Link key={article._id} href={`/blog/${article.slug.current}`} className="article-row">
                 <h3
                   className="row-title"
-                  style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '20px', color: '#e8e0d5', lineHeight: '1.3' }}
+                  style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '20px', color: '#e8e0d5', lineHeight: '1.3', fontOpticalSizing: 'none' as any, fontVariationSettings: "'opsz' 72, 'SOFT' 100" }}
                 >
                   {article.title}
                 </h3>

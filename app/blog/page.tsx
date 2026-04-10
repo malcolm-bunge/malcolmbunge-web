@@ -64,7 +64,7 @@ function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
         boxShadow: '0 24px 48px rgba(0,0,0,0.5)',
       }} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h2 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '22px', color: '#e8e0d5', margin: 0 }}>Get in touch</h2>
+          <h2 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '22px', color: '#e8e0d5', margin: 0, fontOpticalSizing: 'none' as any, fontVariationSettings: "'opsz' 72, 'SOFT' 100" }}>Get in touch</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#8a8499', fontSize: '18px', cursor: 'pointer', lineHeight: 1, padding: '4px' }}>✕</button>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -119,6 +119,7 @@ export default function BlogPage() {
           <h1 style={{
             fontFamily: F.fraunces, fontWeight: 700, fontSize: '56px',
             lineHeight: '1.05', letterSpacing: '-1px', color: '#e8e0d5', marginBottom: '12px',
+            fontOpticalSizing: 'none' as any, fontVariationSettings: "'opsz' 72, 'SOFT' 100",
           }}>
             Writing
           </h1>
@@ -136,7 +137,7 @@ export default function BlogPage() {
           ) : (
             articles.map((article) => (
               <Link key={article._id} href={`/blog/${article.slug.current}`} className="article-row">
-                <h2 className="row-title" style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '22px', color: '#e8e0d5', lineHeight: '1.3', marginBottom: '8px' }}>
+                <h2 className="row-title" style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '22px', color: '#e8e0d5', lineHeight: '1.3', marginBottom: '8px', fontOpticalSizing: 'none' as any, fontVariationSettings: "'opsz' 72, 'SOFT' 100" }}>
                   {article.title}
                 </h2>
                 {article.excerpt && (

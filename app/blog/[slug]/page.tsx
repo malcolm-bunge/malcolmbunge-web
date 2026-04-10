@@ -71,7 +71,7 @@ function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
         boxShadow: '0 24px 48px rgba(0,0,0,0.5)',
       }} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h2 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '22px', color: '#e8e0d5', margin: 0 }}>Get in touch</h2>
+          <h2 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '22px', color: '#e8e0d5', margin: 0, fontOpticalSizing: 'none' as any, fontVariationSettings: "'opsz' 72, 'SOFT' 100" }}>Get in touch</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#8a8499', fontSize: '18px', cursor: 'pointer', lineHeight: 1, padding: '4px' }}>✕</button>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -119,12 +119,12 @@ const portableTextComponents = {
       </p>
     ),
     h2: ({ children }: { children?: React.ReactNode }) => (
-      <h2 style={{ fontFamily: F.fraunces, fontSize: '28px', fontWeight: 700, margin: '56px 0 20px', color: '#e8e0d5', lineHeight: '1.25' }}>
+      <h2 style={{ fontFamily: F.fraunces, fontSize: '28px', fontWeight: 700, margin: '56px 0 20px', color: '#e8e0d5', lineHeight: '1.25', fontOpticalSizing: 'none' as any, fontVariationSettings: "'opsz' 72, 'SOFT' 100" }}>
         {children}
       </h2>
     ),
     h3: ({ children }: { children?: React.ReactNode }) => (
-      <h3 style={{ fontFamily: F.fraunces, fontSize: '22px', fontWeight: 700, margin: '40px 0 16px', color: '#e8e0d5', lineHeight: '1.3' }}>
+      <h3 style={{ fontFamily: F.fraunces, fontSize: '22px', fontWeight: 700, margin: '40px 0 16px', color: '#e8e0d5', lineHeight: '1.3', fontOpticalSizing: 'none' as any, fontVariationSettings: "'opsz' 72, 'SOFT' 100" }}>
         {children}
       </h3>
     ),
@@ -256,6 +256,7 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
             fontFamily: F.fraunces, fontWeight: 700, fontSize: '56px',
             lineHeight: '1.1', letterSpacing: '-1px', color: '#e8e0d5',
             maxWidth: '860px', marginBottom: '28px',
+            fontOpticalSizing: 'none' as any, fontVariationSettings: "'opsz' 72, 'SOFT' 100",
           }}
         >
           <SplitTitle title={article.title} />
