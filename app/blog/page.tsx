@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { sanityFetch } from '@/sanity/client'
 import { ARTICLES_QUERY } from '@/sanity/queries'
+import { urlFor } from '@/src/sanity/lib/image'
 import Header from '../components/Header'
 
 const F = {
@@ -12,18 +13,41 @@ const F = {
   mono: "'JetBrains Mono', monospace",
 }
 
+const superSoft = {
+  fontOpticalSizing: 'none' as any,
+  fontVariationSettings: "'opsz' 72, 'SOFT' 100",
+}
+
 interface Article {
   _id: string
   title: string
   slug: { current: string }
   publishedAt: string
   excerpt?: string
+  image?: any
   tags?: string[]
   readingTime?: number
 }
 
-const formatDate = (d: string) =>
-  new Intl.DateTimeFormat('en-GB', { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(d))
+function SplitTitle({ title }: { title: string }) {
+  const match = title.match(/^(.*?)(\s[–:]\s)(.+)$/)
+  if (match) {
+    return (
+      <span>
+        {match[1]}
+        <span style={{ color: '#ff6b81' }}>{match[2]}{match[3]}</span>
+      </span>
+    )
+  }
+  const words = title.trim().split(' ')
+  const last = words.pop()
+  return (
+    <span>
+      {words.join(' ')}{' '}
+      <span style={{ color: '#ff6b81' }}>{last}</span>
+    </span>
+  )
+}
 
 const MailIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -64,7 +88,7 @@ function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
         boxShadow: '0 24px 48px rgba(0,0,0,0.5)',
       }} onClick={(e) => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h2 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '22px', color: '#e8e0d5', margin: 0, fontOpticalSizing: 'none' as any, fontVariationSettings: "'opsz' 72, 'SOFT' 100" }}>Get in touch</h2>
+          <h2 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '22px', color: '#e8e0d5', margin: 0, ...superSoft }}>Get in touch</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#8a8499', fontSize: '18px', cursor: 'pointer', lineHeight: 1, padding: '4px' }}>✕</button>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -96,16 +120,25 @@ export default function BlogPage() {
       .finally(() => setLoading(false))
   }, [])
 
+  const hero = articles[0] ?? null
+  const rest = articles.slice(1)
+
   return (
     <div style={{ backgroundColor: '#13131a', minHeight: '100dvh', color: '#e8e0d5', fontFamily: F.inter }}>
       <style>{`
         * { box-sizing: border-box; }
         .site-nav-link:hover { color: #e8e0d5 !important; }
         .contact-row:hover { background: rgba(255,255,255,0.04) !important; }
-        .article-row { display: block; text-decoration: none; color: inherit; padding: 24px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .article-row { display: block; text-decoration: none; color: inherit; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
         .article-row:hover .row-title { color: #ff6b81 !important; }
-        @media (max-width: 640px) {
-          .article-meta-row { flex-direction: column !important; align-items: flex-start !important; gap: 4px !important; }
+        .hero-cta:hover { color: #ff6b81 !important; }
+        @media (max-width: 768px) {
+          .hero-grid { grid-template-columns: 1fr !important; }
+          .hero-title { font-size: 56px !important; line-height: 1.05 !important; }
+          .hero-quote { display: none !important; }
+        }
+        @media (max-width: 480px) {
+          .hero-title { font-size: 40px !important; }
         }
       `}</style>
 
@@ -113,53 +146,127 @@ export default function BlogPage() {
         <Header onContactOpen={() => setContactOpen(true)} />
       </div>
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '64px 40px' }}>
-        {/* Page title */}
-        <div style={{ marginBottom: '48px', paddingBottom: '32px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-          <h1 style={{
-            fontFamily: F.fraunces, fontWeight: 700, fontSize: '56px',
-            lineHeight: '1.05', letterSpacing: '-1px', color: '#e8e0d5', marginBottom: '12px',
-            fontOpticalSizing: 'none' as any, fontVariationSettings: "'opsz' 72, 'SOFT' 100",
-          }}>
-            Writing
-          </h1>
-          <p style={{ fontFamily: F.inter, fontSize: '15px', color: '#8a8499', lineHeight: '1.6' }}>
-            On AI, design, and the people in between.
-          </p>
-        </div>
+      {/* ── Hero ── */}
+      {!loading && hero && (
+        <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '64px 40px 0' }}>
+          {hero.tags && hero.tags[0] && (
+            <div style={{
+              fontFamily: F.fraunces, fontStyle: 'italic', fontSize: '14px',
+              color: '#ff6b81', marginBottom: '24px', letterSpacing: '0.2px',
+            }}>
+              {hero.tags[0]}
+            </div>
+          )}
 
-        {/* Article list */}
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-          {loading ? (
-            <div style={{ padding: '40px 0', fontFamily: F.mono, fontSize: '13px', color: '#8a8499' }}>Loading…</div>
-          ) : articles.length === 0 ? (
-            <div style={{ padding: '40px 0', fontFamily: F.inter, fontSize: '15px', color: '#8a8499' }}>No articles yet. Check back soon.</div>
-          ) : (
-            articles.map((article) => (
+          <div
+            className="hero-grid"
+            style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: '64px', alignItems: 'start', marginBottom: '56px' }}
+          >
+            <Link href={`/blog/${hero.slug.current}`} style={{ textDecoration: 'none' }}>
+              <h1
+                className="hero-title"
+                style={{
+                  fontFamily: F.fraunces, fontWeight: 700, fontSize: '88px',
+                  lineHeight: '1.0', letterSpacing: '-2px', color: '#e8e0d5',
+                  ...superSoft,
+                }}
+              >
+                <SplitTitle title={hero.title} />
+              </h1>
+            </Link>
+
+            <div className="hero-quote" style={{ paddingTop: '12px' }}>
+              {hero.excerpt && (
+                <p style={{
+                  fontFamily: F.fraunces, fontStyle: 'italic', fontSize: '18px',
+                  lineHeight: '1.7', color: '#8a8499',
+                }}>
+                  "{hero.excerpt.length > 160 ? hero.excerpt.slice(0, 160).trimEnd() + '…' : hero.excerpt}"
+                </p>
+              )}
+              {hero.readingTime && (
+                <div style={{ marginTop: '24px', fontFamily: F.mono, fontSize: '11px', color: '#8a8499' }}>
+                  {hero.readingTime} min read
+                </div>
+              )}
+              <Link
+                href={`/blog/${hero.slug.current}`}
+                className="hero-cta"
+                style={{
+                  display: 'inline-block', marginTop: '20px', fontFamily: F.inter,
+                  fontWeight: 500, fontSize: '13px', color: '#e8e0d5',
+                  textDecoration: 'none', letterSpacing: '0.5px',
+                }}
+              >
+                Read article →
+              </Link>
+            </div>
+          </div>
+
+          {hero.image && (
+            <div style={{ width: '100%', height: '480px', overflow: 'hidden', position: 'relative' }}>
+              <img
+                src={urlFor(hero.image).width(1200).height(480).fit('crop').url()}
+                alt={hero.title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(20%)' }}
+              />
+              <div style={{
+                position: 'absolute', inset: 0,
+                background: 'linear-gradient(to bottom, transparent 50%, #13131a 100%)',
+              }} />
+            </div>
+          )}
+        </section>
+      )}
+
+      {loading && (
+        <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '64px 40px 0' }}>
+          <div style={{ fontFamily: F.mono, fontSize: '13px', color: '#8a8499' }}>Loading…</div>
+        </section>
+      )}
+
+      {/* ── Article list ── */}
+      {!loading && rest.length > 0 && (
+        <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '64px 40px' }}>
+          <div style={{
+            display: 'flex', alignItems: 'baseline', justifyContent: 'space-between',
+            marginBottom: '8px', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '32px',
+          }}>
+            <span style={{ fontFamily: F.mono, fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', color: '#8a8499' }}>
+              More writing
+            </span>
+          </div>
+          <div>
+            {rest.map((article) => (
               <Link key={article._id} href={`/blog/${article.slug.current}`} className="article-row">
-                <h2 className="row-title" style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '22px', color: '#e8e0d5', lineHeight: '1.3', marginBottom: '8px', fontOpticalSizing: 'none' as any, fontVariationSettings: "'opsz' 72, 'SOFT' 100" }}>
-                  {article.title}
-                </h2>
+                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '24px' }}>
+                  <h3
+                    className="row-title"
+                    style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '20px', color: '#e8e0d5', lineHeight: '1.3', ...superSoft }}
+                  >
+                    {article.title}
+                  </h3>
+                  {article.readingTime && (
+                    <span style={{ fontFamily: F.mono, fontSize: '11px', color: '#8a8499', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                      {article.readingTime} min read
+                    </span>
+                  )}
+                </div>
                 {article.excerpt && (
-                  <p style={{ fontFamily: F.inter, fontSize: '14px', lineHeight: '1.65', color: '#8a8499' }}>
-                    {article.excerpt.length > 160 ? article.excerpt.slice(0, 160).trimEnd() + '…' : article.excerpt}
+                  <p style={{ fontFamily: F.inter, fontSize: '14px', lineHeight: '1.6', color: '#8a8499', marginTop: '6px' }}>
+                    {article.excerpt.length > 120 ? article.excerpt.slice(0, 120).trimEnd() + '…' : article.excerpt}
                   </p>
                 )}
-                <div style={{ marginTop: '10px', fontFamily: F.mono, fontSize: '11px', color: '#5a5568' }}>
-                  {article.readingTime && <span>{article.readingTime} min read</span>}
-                  {article.readingTime && article.tags && article.tags.length > 0 && <span> · </span>}
-                  {article.tags && article.tags.length > 0 && <span>{article.tags.join(' · ')}</span>}
-                </div>
               </Link>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        </section>
+      )}
 
-        <footer style={{ marginTop: '80px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', gap: '24px', justifyContent: 'flex-end' }}>
-          <Link href="/impressum" style={{ fontFamily: F.inter, fontSize: '12px', color: '#8a8499', textDecoration: 'none' }} className="site-nav-link">Legal Notice</Link>
-          <Link href="/datenschutz" style={{ fontFamily: F.inter, fontSize: '12px', color: '#8a8499', textDecoration: 'none' }} className="site-nav-link">Privacy Policy</Link>
-        </footer>
-      </div>
+      <footer style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 40px 48px', display: 'flex', gap: '24px', justifyContent: 'flex-end', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '24px' }}>
+        <Link href="/impressum" style={{ fontFamily: F.inter, fontSize: '12px', color: '#8a8499', textDecoration: 'none' }} className="site-nav-link">Legal Notice</Link>
+        <Link href="/datenschutz" style={{ fontFamily: F.inter, fontSize: '12px', color: '#8a8499', textDecoration: 'none' }} className="site-nav-link">Privacy Policy</Link>
+      </footer>
 
       <ContactModal isOpen={contactOpen} onClose={() => setContactOpen(false)} />
     </div>
