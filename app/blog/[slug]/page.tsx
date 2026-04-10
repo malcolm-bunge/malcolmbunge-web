@@ -92,7 +92,7 @@ function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
 }
 
 function SplitTitle({ title }: { title: string }) {
-  const match = title.match(/^(.*?)(\s[–:]\s)(.+)$/s)
+  const match = title.match(/^(.*?)(\s[–:]\s)(.+)$/)
   if (match) {
     return (
       <span>

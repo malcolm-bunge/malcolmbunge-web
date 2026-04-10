@@ -29,7 +29,7 @@ const formatDate = (d: string) =>
 
 // Colorise everything after the first " – " or ": " in coral
 function SplitTitle({ title }: { title: string }) {
-  const match = title.match(/^(.*?)(\s[–:]\s)(.+)$/s)
+  const match = title.match(/^(.*?)(\s[–:]\s)(.+)$/)
   if (match) {
     return (
       <span>
