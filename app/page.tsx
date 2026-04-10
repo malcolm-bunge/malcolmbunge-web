@@ -219,10 +219,11 @@ export default function Home() {
                   "{hero.excerpt.length > 160 ? hero.excerpt.slice(0, 160).trimEnd() + '…' : hero.excerpt}"
                 </p>
               )}
-              <div style={{ marginTop: '24px', display: 'flex', alignItems: 'center', gap: '16px', fontFamily: F.mono, fontSize: '11px', color: '#8a8499' }}>
-                <time>{formatDate(hero.publishedAt)}</time>
-                {hero.readingTime && <span>{hero.readingTime} min read</span>}
-              </div>
+              {hero.readingTime && (
+                <div style={{ marginTop: '24px', fontFamily: F.mono, fontSize: '11px', color: '#8a8499' }}>
+                  {hero.readingTime} min read
+                </div>
+              )}
               <Link
                 href={`/blog/${hero.slug.current}`}
                 className="hero-cta"
@@ -287,17 +288,12 @@ export default function Home() {
           <div>
             {rest.map((article) => (
               <Link key={article._id} href={`/blog/${article.slug.current}`} className="article-row">
-                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '24px' }}>
-                  <h3
-                    className="row-title"
-                    style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '20px', color: '#e8e0d5', lineHeight: '1.3' }}
-                  >
-                    {article.title}
-                  </h3>
-                  <time style={{ fontFamily: F.mono, fontSize: '11px', color: '#8a8499', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                    {formatDate(article.publishedAt)}
-                  </time>
-                </div>
+                <h3
+                  className="row-title"
+                  style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '20px', color: '#e8e0d5', lineHeight: '1.3' }}
+                >
+                  {article.title}
+                </h3>
                 {article.excerpt && (
                   <p style={{ fontFamily: F.inter, fontSize: '14px', lineHeight: '1.6', color: '#8a8499', marginTop: '6px' }}>
                     {article.excerpt.length > 120 ? article.excerpt.slice(0, 120).trimEnd() + '…' : article.excerpt}

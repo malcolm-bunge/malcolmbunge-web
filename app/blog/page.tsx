@@ -136,14 +136,9 @@ export default function BlogPage() {
           ) : (
             articles.map((article) => (
               <Link key={article._id} href={`/blog/${article.slug.current}`} className="article-row">
-                <div className="article-meta-row" style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '24px', marginBottom: '8px' }}>
-                  <h2 className="row-title" style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '22px', color: '#e8e0d5', lineHeight: '1.3' }}>
-                    {article.title}
-                  </h2>
-                  <time style={{ fontFamily: F.mono, fontSize: '11px', color: '#8a8499', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                    {formatDate(article.publishedAt)}
-                  </time>
-                </div>
+                <h2 className="row-title" style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '22px', color: '#e8e0d5', lineHeight: '1.3', marginBottom: '8px' }}>
+                  {article.title}
+                </h2>
                 {article.excerpt && (
                   <p style={{ fontFamily: F.inter, fontSize: '14px', lineHeight: '1.65', color: '#8a8499' }}>
                     {article.excerpt.length > 160 ? article.excerpt.slice(0, 160).trimEnd() + '…' : article.excerpt}

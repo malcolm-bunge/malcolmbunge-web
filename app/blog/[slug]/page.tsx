@@ -241,7 +241,6 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
           {article.title}
         </h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap', fontFamily: F.mono, fontSize: '12px', color: '#8a8499' }}>
-          <time>{formatDate(article.publishedAt)}</time>
           {article.readingTime && <span>{article.readingTime} min read</span>}
           {article.author && <span>by {article.author}</span>}
           {article.tags && article.tags.length > 1 && <span>{article.tags.slice(1).join(' · ')}</span>}
