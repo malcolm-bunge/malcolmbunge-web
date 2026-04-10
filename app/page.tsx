@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { PortableText } from '@portabletext/react'
 import { sanityFetch } from '@/sanity/client'
-import { ARTICLES_QUERY } from '@/sanity/queries'
+import { ARTICLES_QUERY, ABOUT_INTRO_QUERY } from '@/sanity/queries'
 import { urlFor } from '@/src/sanity/lib/image'
 import Header from './components/Header'
 
@@ -130,6 +131,7 @@ function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function Home() {
   const [articles, setArticles] = useState<Article[]>([])
+  const [intro, setIntro] = useState<any[] | null>(null)
   const [loading, setLoading] = useState(true)
   const [contactOpen, setContactOpen] = useState(false)
 
@@ -138,6 +140,9 @@ export default function Home() {
       .then((data) => setArticles(data || []))
       .catch(console.error)
       .finally(() => setLoading(false))
+    sanityFetch<{ homepageIntro: any[] }>({ query: ABOUT_INTRO_QUERY })
+      .then((data) => setIntro(data?.homepageIntro ?? null))
+      .catch(console.error)
   }, [])
 
   const hero = articles[0] ?? null
@@ -154,17 +159,43 @@ export default function Home() {
         .hero-cta:hover { color: #ff6b81 !important; }
         @media (max-width: 768px) {
           .hero-grid { grid-template-columns: 1fr !important; }
-          .hero-title { font-size: 56px !important; line-height: 1.05 !important; }
+          .hero-title { font-size: 40px !important; line-height: 1.1 !important; }
           .hero-quote { display: none !important; }
         }
         @media (max-width: 480px) {
-          .hero-title { font-size: 40px !important; }
+          .hero-title { font-size: 32px !important; }
         }
       `}</style>
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 40px' }}>
         <Header onContactOpen={() => setContactOpen(true)} />
       </div>
+
+      {/* ── Intro ── */}
+      {intro && (
+        <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '56px 40px 0' }}>
+          <h2 style={{
+            fontFamily: F.fraunces,
+            fontWeight: 700,
+            fontSize: '40px',
+            lineHeight: '1.2',
+            letterSpacing: '-0.5px',
+            color: '#e8e0d5',
+            maxWidth: '860px',
+            fontOpticalSizing: 'none' as any,
+            fontVariationSettings: "'opsz' 72, 'SOFT' 100",
+          }}>
+            <PortableText
+              value={intro}
+              components={{
+                block: {
+                  normal: ({ children }) => <>{children}</>,
+                },
+              }}
+            />
+          </h2>
+        </section>
+      )}
 
       {/* ── Hero ── */}
       {!loading && hero && (
@@ -189,21 +220,21 @@ export default function Home() {
             style={{ display: 'grid', gridTemplateColumns: '3fr 2fr', gap: '64px', alignItems: 'start', marginBottom: '56px' }}
           >
             <Link href={`/blog/${hero.slug.current}`} style={{ textDecoration: 'none' }}>
-              <h1
+              <h3
                 className="hero-title"
                 style={{
                   fontFamily: F.fraunces,
                   fontWeight: 700,
-                  fontSize: '88px',
-                  lineHeight: '1.0',
-                  letterSpacing: '-2px',
+                  fontSize: '56px',
+                  lineHeight: '1.1',
+                  letterSpacing: '-1px',
                   color: '#e8e0d5',
                   fontOpticalSizing: 'none' as any,
                   fontVariationSettings: "'opsz' 72, 'SOFT' 100",
                 }}
               >
                 <SplitTitle title={hero.title} />
-              </h1>
+              </h3>
             </Link>
 
             <div
