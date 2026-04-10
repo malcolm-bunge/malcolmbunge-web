@@ -91,6 +91,26 @@ function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
   )
 }
 
+function SplitTitle({ title }: { title: string }) {
+  const match = title.match(/^(.*?)(\s[–:]\s)(.+)$/s)
+  if (match) {
+    return (
+      <span>
+        {match[1]}
+        <span style={{ color: '#ff6b81' }}>{match[2]}{match[3]}</span>
+      </span>
+    )
+  }
+  const words = title.trim().split(' ')
+  const last = words.pop()
+  return (
+    <span>
+      {words.join(' ')}{' '}
+      <span style={{ color: '#ff6b81' }}>{last}</span>
+    </span>
+  )
+}
+
 const portableTextComponents = {
   block: {
     normal: ({ children }: { children?: React.ReactNode }) => (
@@ -238,7 +258,7 @@ export default function ArticlePage({ params }: { params: Promise<{ slug: string
             maxWidth: '860px', marginBottom: '28px',
           }}
         >
-          {article.title}
+          <SplitTitle title={article.title} />
         </h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap', fontFamily: F.mono, fontSize: '12px', color: '#8a8499' }}>
           {article.readingTime && <span>{article.readingTime} min read</span>}
