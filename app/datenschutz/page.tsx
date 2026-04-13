@@ -6,9 +6,9 @@ export const metadata: Metadata = {
 }
 
 const F = {
-  fraunces: "'Fraunces', serif",
-  jakarta:  "'Plus Jakarta Sans', sans-serif",
-  poppins:  "'Poppins', sans-serif",
+  fraunces: "var(--nf-fraunces), serif",
+  jakarta:  "var(--nf-inter), sans-serif",
+  poppins:  "var(--nf-inter), sans-serif",
 }
 
 export default function Datenschutz() {
@@ -117,24 +117,13 @@ export default function Datenschutz() {
 
         <section style={{ marginBottom: '40px' }}>
           <h3 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
-            3. Google Fonts
+            3. Typography (self-hosted fonts)
           </h3>
-          <p style={{ fontSize: '16px', lineHeight: '1.75', margin: '0 0 16px', color: '#2a2a51' }}>
-            This website uses Google Fonts (provider: Google LLC, 1600 Amphitheatre Parkway,
-            Mountain View, CA 94043, USA). When a page loads, a connection is established to
-            Google's servers, during which your IP address is transmitted.
-          </p>
           <p style={{ fontSize: '16px', lineHeight: '1.75', margin: 0, color: '#2a2a51' }}>
-            Google Fonts is used in the interest of a consistent and appealing presentation of this
-            website. This constitutes a legitimate interest within the meaning of Art. 6 para. 1
-            lit. f GDPR. For more information see{' '}
-            <a href="https://developers.google.com/fonts/faq" target="_blank" rel="noopener noreferrer">
-              developers.google.com/fonts/faq
-            </a>{' '}
-            and Google's privacy policy at{' '}
-            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">
-              policies.google.com/privacy
-            </a>.
+            This website uses the open-source typefaces Fraunces, Inter and JetBrains Mono. All font
+            files are hosted locally on the same server as the website itself. No connection to
+            external font providers (such as Google) is established when you visit this site, and no
+            personal data is transmitted to third parties for the purpose of loading fonts.
           </p>
         </section>
 
@@ -171,7 +160,34 @@ export default function Datenschutz() {
 
         <section style={{ marginBottom: '40px' }}>
           <h3 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
-            6. Contact by email
+            6. VG Wort tracking pixels
+          </h3>
+          <p style={{ fontSize: '16px', lineHeight: '1.75', margin: '0 0 16px', color: '#2a2a51' }}>
+            Some pages on this website contain invisible counting pixels (1x1 images) provided by
+            VG Wort (Verwertungsgesellschaft Wort, Untere Weidenstr. 5, 81543 Munich, Germany).
+            These pixels are used to measure the reach of texts and to calculate the remuneration
+            entitlements of authors under § 54 of the German Copyright Act (UrhG).
+          </p>
+          <p style={{ fontSize: '16px', lineHeight: '1.75', margin: '0 0 16px', color: '#2a2a51' }}>
+            When a page containing such a pixel is loaded, your IP address and the URL of the page
+            are transmitted to VG Wort. This data is used exclusively for statistical purposes in
+            anonymised form and cannot be traced back to individual persons.
+          </p>
+          <p style={{ fontSize: '16px', lineHeight: '1.75', margin: 0, color: '#2a2a51' }}>
+            The legal basis for this processing is Art. 6 para. 1 lit. f GDPR (legitimate interest
+            of the author in fair remuneration for the use of copyright-protected works). For more
+            information see{' '}
+            <a href="https://www.vgwort.de/hilfsseiten/datenschutz.html" target="_blank" rel="noopener noreferrer">
+              vgwort.de/hilfsseiten/datenschutz.html
+            </a>.
+          </p>
+        </section>
+
+        <div style={{ borderTop: '1px solid rgba(27,27,52,0.12)', margin: '0 0 40px' }} />
+
+        <section style={{ marginBottom: '40px' }}>
+          <h3 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
+            7. Contact by email
           </h3>
           <p style={{ fontSize: '16px', lineHeight: '1.75', margin: 0, color: '#2a2a51' }}>
             If you contact me by email, your details (email address, message content) will be stored
@@ -185,7 +201,7 @@ export default function Datenschutz() {
 
         <section style={{ marginBottom: '40px' }}>
           <h3 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
-            7. Your rights as a data subject
+            8. Your rights as a data subject
           </h3>
           <p style={{ fontSize: '16px', lineHeight: '1.75', margin: '0 0 16px', color: '#2a2a51' }}>
             Under the GDPR you have the following rights:
@@ -208,7 +224,7 @@ export default function Datenschutz() {
 
         <section style={{ marginBottom: '40px' }}>
           <h3 style={{ fontFamily: F.fraunces, fontWeight: 700, fontSize: '18px', color: '#1b1b34', margin: '0 0 12px' }}>
-            8. Right to lodge a complaint
+            9. Right to lodge a complaint
           </h3>
           <p style={{ fontSize: '16px', lineHeight: '1.75', margin: 0, color: '#2a2a51' }}>
             You have the right to lodge a complaint with a data protection supervisory authority

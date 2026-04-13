@@ -9,9 +9,9 @@ import { urlFor } from '@/src/sanity/lib/image'
 import Header from './components/Header'
 
 const F = {
-  fraunces: "'Fraunces', serif",
-  inter: "'Inter', sans-serif",
-  mono: "'JetBrains Mono', monospace",
+  fraunces: "var(--nf-fraunces), serif",
+  inter: "var(--nf-inter), sans-serif",
+  mono: "var(--nf-mono), monospace",
 }
 
 interface Article {

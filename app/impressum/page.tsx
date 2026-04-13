@@ -6,9 +6,9 @@ export const metadata: Metadata = {
 }
 
 const F = {
-  fraunces: "'Fraunces', serif",
-  jakarta:  "'Plus Jakarta Sans', sans-serif",
-  poppins:  "'Poppins', sans-serif",
+  fraunces: "var(--nf-fraunces), serif",
+  jakarta:  "var(--nf-inter), sans-serif",
+  poppins:  "var(--nf-inter), sans-serif",
 }
 
 export default function Impressum() {

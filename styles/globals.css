@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Inter', sans-serif;
-  --font-fraunces: 'Fraunces', serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: var(--nf-inter), sans-serif;
+  --font-fraunces: var(--nf-fraunces), serif;
+  --font-mono: var(--nf-mono), monospace;
 
   --color-bg: #13131a;
   --color-fg: #e8e0d5;
@@ -23,6 +23,6 @@
 body {
   background-color: #13131a;
   color: #e8e0d5;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--nf-inter), sans-serif;
   -webkit-font-smoothing: antialiased;
 }

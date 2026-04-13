@@ -3,8 +3,8 @@
 import Link from 'next/link'
 
 const F = {
-  fraunces: "'Fraunces', serif",
-  inter: "'Inter', sans-serif",
+  fraunces: "var(--nf-fraunces), serif",
+  inter: "var(--nf-inter), sans-serif",
 }
 
 export default function Header({ onContactOpen }: { onContactOpen: () => void }) {
