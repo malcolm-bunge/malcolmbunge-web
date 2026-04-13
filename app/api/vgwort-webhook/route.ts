@@ -11,11 +11,10 @@ const writeClient = createClient({
 
 async function registerVgWortPixel(): Promise<string> {
   const response = await fetch(
-    'https://tom.vgwort.de/api/external/metis/rest/pixel/v1.0/order',
+    'https://tom.vgwort.de/api/cms/metis/rest/pixel/v1.0/order',
     {
       method: 'POST',
       headers: {
-        'Authorization': 'Basic ' + Buffer.from(`${process.env.VG_WORT_USERNAME}:${process.env.VG_WORT_PASSWORD}`).toString('base64'),
         'api_key': process.env.VG_WORT_API_KEY!,
         'Content-Type': 'application/json',
       },

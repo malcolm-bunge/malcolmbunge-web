@@ -14,23 +14,15 @@ const client = createClient({
 })
 
 async function registerVgWortPixel(): Promise<string> {
-  const credentials = Buffer.from(
-    `${process.env.VG_WORT_USERNAME}:${process.env.VG_WORT_API_KEY}`
-  ).toString('base64')
-
   const response = await fetch(
-    'https://tom.vgwort.de/api/metis/rest/orders/v1.0/order',
+    'https://tom.vgwort.de/api/cms/metis/rest/pixel/v1.0/order',
     {
       method: 'POST',
       headers: {
-        Authorization: `Basic ${credentials}`,
+        'api_key': process.env.VG_WORT_API_KEY!,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        distributionRight: 'UNDEFINED',
-        lyric: false,
-        shorttext: false,
-      }),
+      body: JSON.stringify({ count: 1 }),
     }
   )
 
@@ -40,11 +32,12 @@ async function registerVgWortPixel(): Promise<string> {
   }
 
   const data = await response.json()
-  const pixelUrl: string = data?.texte?.[0]?.public
-  if (!pixelUrl) {
+  const pixel = data?.pixels?.[0]
+  const domain: string = data?.domain
+  if (!pixel?.publicIdentificationId || !domain) {
     throw new Error(`Unexpected VG Wort response: ${JSON.stringify(data)}`)
   }
-  return pixelUrl
+  return `https://${domain}/na/${pixel.publicIdentificationId}`
 }
 
 async function backfillPixels() {
