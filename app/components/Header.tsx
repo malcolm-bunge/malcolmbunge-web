@@ -23,7 +23,7 @@ export default function Header({ onContactOpen }: { onContactOpen: () => void })
           fontStyle: 'italic',
           fontWeight: 400,
           fontSize: '20px',
-          color: '#e8e0d5',
+          color: '#E84F6A',
           letterSpacing: '-0.2px',
         }}>
           malcolm bunge
@@ -68,7 +68,7 @@ export default function Header({ onContactOpen }: { onContactOpen: () => void })
       </nav>
 
       <style>{`
-        .site-nav-link:hover { color: #e8e0d5 !important; }
+        .site-nav-link:hover { color: #E84F6A !important; }
       `}</style>
     </header>
   )
