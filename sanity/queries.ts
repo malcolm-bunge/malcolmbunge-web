@@ -53,6 +53,18 @@ export const ABOUT_INTRO_QUERY = `
   }
 `
 
+export const DOWNLOADS_QUERY = `
+  *[_type == "downloadItem"] | order(name asc) {
+    _id,
+    driveFileId,
+    name,
+    mimeType,
+    fileSize,
+    downloadUrl,
+    modifiedTime,
+  }
+`
+
 export const ABOUT_PAGE_QUERY = `
   *[_type == "aboutPage"][0] {
     _id,

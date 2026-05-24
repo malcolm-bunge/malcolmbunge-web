@@ -49,6 +49,15 @@ export default function Header({ onContactOpen }: { onContactOpen: () => void })
         }} className="site-nav-link">
           Writing
         </Link>
+        <Link href="/downloads" style={{
+          fontFamily: F.inter,
+          fontWeight: 400,
+          fontSize: '14px',
+          color: '#8a8499',
+          textDecoration: 'none',
+        }} className="site-nav-link">
+          Downloads
+        </Link>
         <button
           onClick={onContactOpen}
           style={{
